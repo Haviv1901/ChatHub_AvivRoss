@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ChatListActivity">
+
+    <TextView
+        android:id="@+id/greenTopBar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background ="@color/green"
+        android:text = "ChatHub"
+        android:textSize="30sp"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:textStyle="bold"
+        />
+
+    <View
+        android:id="@+id/greenBottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:background ="@color/green"
+        android:layout_alignParentBottom="true"
+        />
+
+
+    <ListView
+        android:id="@+id/chatList"
+        android:layout_width="match_parent"
+        android:layout_height="610dp"
+        android:layout_below="@id/greenTopBar"
+        android:layout_above="@id/greenBottomBar"
+        />
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@null"
+        android:scaleType="fitXY"
+        android:src="@drawable/addchaticon"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="10dp"
+        />
+
+
+    <ImageButton
+        android:id="@+id/imageButton2"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@null"
+        android:scaleType="fitXY"
+        android:src="@drawable/logouticon"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        />
+
+
+
+</RelativeLayout>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ChatActivity">
+
+<LinearLayout
+    android:id="@+id/topBar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    >
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@null"
+        android:scaleType="fitXY"
+        android:src="@drawable/chaticon"
+        android:layout_marginLeft="10dp"
+        />
+
+    <TextView
+        android:id="@+id/groupName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Group"
+        android:textSize="30sp"
+        android:textColor="@color/black"
+        android:layout_marginLeft="10dp"
+        />
+
+</LinearLayout>
+
+<ListView
+    android:id="@+id/chat"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_weight="0"
+    android:layout_below="@id/topBar"
+    android:layout_above="@id/bottomBar"
+    />
+
+
+
+<LinearLayout
+    android:id="@+id/bottomBar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_alignParentBottom="true"
+    >
+
+    <EditText
+        android:id="@+id/message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:hint="Type a message"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        />
+
+    <ImageButton
+        android:id="@+id/imageButton2"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@null"
+        android:scaleType="fitXY"
+        android:src="@drawable/cameraicon"
+        android:layout_marginRight="10dp"
+        />
+
+    <ImageButton
+        android:id="@+id/imageButton3"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@null"
+        android:scaleType="fitXY"
+        android:src="@drawable/microphone"
+        android:layout_marginRight="10dp"
+        />
+</LinearLayout>
+
+</RelativeLayout>
