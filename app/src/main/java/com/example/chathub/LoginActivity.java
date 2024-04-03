@@ -11,7 +11,8 @@ import android.content.Intent;
 
 import com.google.firebase.FirebaseApp;
 
-public class LoginActivity extends MainActivity implements View.OnClickListener {
+public class LoginActivity extends MainActivity implements View.OnClickListener
+{
 
     private EditText etUsername, etPassword;
     private CheckBox cbRememberMe;

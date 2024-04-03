@@ -41,12 +41,11 @@
         android:layout_height="50dp"
         android:background="@null"
         android:scaleType="fitXY"
-        android:src="@drawable/addChatIcon"
+        android:src="@drawable/addchaticon"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_marginBottom="10dp"
-        android:layout_marginRight="10dp"
-        />
+        android:layout_marginRight="10dp" />
     <ImageButton
         android:id="@+id/ibLogout"
         android:layout_width="50dp"

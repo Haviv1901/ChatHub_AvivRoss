@@ -85,6 +85,17 @@
         android:src="@drawable/microphone"
         android:layout_marginRight="10dp"
         />
+
+
+    <ImageButton
+        android:id="@+id/ibSendButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@null"
+        android:scaleType="fitXY"
+        android:src="@drawable/sendicon"
+        android:layout_marginRight="10dp"
+        />
 </LinearLayout>
 
 </RelativeLayout>
