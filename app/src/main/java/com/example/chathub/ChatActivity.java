@@ -1,13 +1,26 @@
 package com.example.chathub;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.chathub.MainActivity;
@@ -18,19 +31,32 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+
+
 
 public class ChatActivity extends MainActivity implements View.OnClickListener {
 
+    // views
     private ListView messegesListView;
-    private ImageView ibBack, ibCameraButton, ibMicrophoneButton;
+    private ImageView ibBack, ibCameraButton, ibMicrophoneButton, ibSendButton, ivImage, ivXIcon;
     private EditText etMessage;
+    private LinearLayout imageBar;
+
+    // else
     private MessageAdapter messageAdapter;
     private List<Message> messages;
-    private Button ibSendButton;
+    private Boolean isImage;
+    private Bitmap image;
 
 
+    private static final int INTERNET_PERMISSION_REQUEST_CODE = 1001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -47,26 +73,36 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         ibCameraButton = findViewById(R.id.ibCameraButton);
         ibMicrophoneButton = findViewById(R.id.ibMicrophoneButton);
         etMessage = findViewById(R.id.etMessage);
+        ibSendButton = findViewById(R.id.ibSendButton);
+        ivImage = findViewById(R.id.ivImage);
+        imageBar = findViewById(R.id.imageBar);
+        ivXIcon = findViewById(R.id.ivXIcon);
 
         // onclicks
 
         ibBack.setOnClickListener(this);
         ibCameraButton.setOnClickListener(this);
         ibMicrophoneButton.setOnClickListener(this);
+        ibSendButton.setOnClickListener(this);
+        ivXIcon.setOnClickListener(this);
 
         // set listener
         getMessagesFromFirebase();
 
+        // set image bar to invisible
+        hideImageBar();
 
 
     }
 
+    /// this method will set up a listener for the messages in the chat
     private void getMessagesFromFirebase()
     {
-        mDatabase.child("Chats").child("chat1").child("Messages").addValueEventListener(new ValueEventListener() {
+        chatManager.getChatsHandler().child("chat1").child("Messages").addValueEventListener(new ValueEventListener()
+        {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                retrieveMessages(dataSnapshot);
+                updateMessagesList(chatManager.retrieveMessages(dataSnapshot));
             }
 
             @Override
@@ -78,22 +114,18 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         });
     }
 
-    private void retrieveMessages(DataSnapshot dataSnapshot)
-    {
-        List<Message> newMessages = new ArrayList<>();
-        for (DataSnapshot messageSnapshot : dataSnapshot.getChildren())
-        {
-            Message message = messageSnapshot.getValue(Message.class);
-            newMessages.add(message);
-        }
-
-        updateMessagesList(newMessages);
-    }
-
     private void updateMessagesList(List<Message> newMessages) {
+        Collections.sort(newMessages, new Comparator<Message>() {
+            @Override
+            public int compare(Message m1, Message m2) {
+                return Integer.compare(m1.getMsgId(), m2.getMsgId());
+            }
+        });
+    
         messages = newMessages;
         messageAdapter = new MessageAdapter(ChatActivity.this, R.layout.message, R.id.tvMessageContent, messages);
         messegesListView.setAdapter(messageAdapter);
+        messegesListView.setSelection(messages.size() - 1);
     }
 
 
@@ -108,8 +140,7 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
             }
             else if(v == ibCameraButton)
             {
-                //open camera
-
+                pickFromGallery();
             }
             else if(v == ibMicrophoneButton)
             {
@@ -120,23 +151,104 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
                 //send message
                 sendMessage();
             }
+            else if(v == ivXIcon)
+            {
+                //remove image
+                hideImageBar();
+            }
+            else
+            {
+                //do nothing
+            }
 
 
     }
 
+    private void hideImageBar()
+    {
+        ivImage.setVisibility(View.GONE);
+        imageBar.setVisibility(View.GONE);
+        imageBar.setVisibility(View.GONE);
+        isImage = false;
+    }
+
+    private void showImageBar()
+    {
+        ivImage.setVisibility(View.VISIBLE);
+        imageBar.setVisibility(View.VISIBLE);
+        imageBar.setVisibility(View.VISIBLE);
+        isImage = true;
+    }
+
+    private void pickFromGallery()
+    {
+        //Create an Intent with action as ACTION_PICK
+        Intent intent=new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        // Sets the type as image/*. This ensures only components of type image are selected
+        intent.setType("image/*");
+        //We pass an extra array with the accepted mime types. This will ensure only components with these MIME types as targeted.
+        String[] mimeTypes = {"image/jpeg", "image/png"};
+        intent.putExtra(Intent.EXTRA_MIME_TYPES,mimeTypes);
+        // Launching the Intent
+        startActivityForResult(intent,0);
+    }
+
+@Override
+protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+{
+    super.onActivityResult(requestCode, resultCode, data);
+    if (resultCode == Activity.RESULT_OK) {
+        Uri selectedImage = data.getData();
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2)
+        {
+            getContentResolver().takePersistableUriPermission(selectedImage, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
+
+
+
+        //put image in ImageView
+        ivImage.setImageURI(selectedImage);
+
+        // Get Bitmap from Uri
+        try
+        {
+            image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+            showImageBar();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+}
+
     private void sendMessage()
     {
+
         String message = etMessage.getText().toString();
-        if(message.isEmpty())
+        // check that the message is not empty
+        if(message.isEmpty() && isImage == false)
         {
-            Toast.makeText(this, "Please enter a message", Toast.LENGTH_SHORT).show();
             return;
         }
 
         // send message to data base
+        if(isImage)
+        {
+            chatManager.sendMessage(message, image);
+        }
+        else
+        {
+            chatManager.sendMessage(message);
+        }
 
+
+        // reset the message box
         etMessage.setText("");
+        hideImageBar();
     }
+
+
 
     private void backOnClick()
     {

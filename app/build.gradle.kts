@@ -37,6 +37,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.7.3"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-database")
+    implementation("com.google.firebase:firebase-storage:20.0.0")
 
     implementation("com.google.firebase:firebase-database-ktx")
     implementation("androidx.appcompat:appcompat:1.6.1")
