@@ -1,14 +1,15 @@
-package com.example.chathub;
+package com.example.chathub.Data_Containers;
 
 
-class Message {
+public class Message {
     private String sender;
     private String content;
     private String image;
     private String date;
     private int msgId;
 
-    public Message() {
+    public Message()
+    {
         // Default constructor required for Firebase
     }
 

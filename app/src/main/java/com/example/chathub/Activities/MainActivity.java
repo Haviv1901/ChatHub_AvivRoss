@@ -1,13 +1,14 @@
-package com.example.chathub;
+package com.example.chathub.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.example.chathub.Managers.ChatManager;
+import com.example.chathub.R;
+import com.example.chathub.Managers.UserManager;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import android.graphics.Bitmap;
-import android.util.Log;
 public class MainActivity extends AppCompatActivity
 {
 

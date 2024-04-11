@@ -15,21 +15,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ChatHub"
         tools:targetApi="31">
-
         <activity
-            android:name=".SignUpActivity"
+            android:name=".Activities.SignUpOTPActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.SignUpActivity"
             android:exported="true" />
         <activity
-            android:name=".MainActivity"
+            android:name=".Activities.MainActivity"
             android:exported="true" />
         <activity
-            android:name=".ChatListActivity"
+            android:name=".Activities.ChatListActivity"
             android:exported="true" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".Activities.LoginActivity"
             android:exported="true" />
         <activity
-            android:name=".ChatActivity"
+            android:name=".Activities.ChatActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

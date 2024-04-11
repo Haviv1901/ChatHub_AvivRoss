@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Activities.SignUpActivity">
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="211dp"
+        android:layout_gravity="center"
+        android:src="@drawable/signup" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp"
+        android:text="Confirm Code Sent to Your Phone Number"
+        android:textColor="@color/black"
+        android:textSize="20sp" />
+
+
+    <EditText
+        android:id="@+id/etOTPConfirm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="60dp"
+        android:hint="Code sent"
+        android:inputType="number"
+        android:background="@drawable/edit_text_rounded_corner"
+        />
+
+
+
+
+    <ProgressBar
+        android:id="@+id/pbSignUp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="visible" />
+
+
+    <Button
+        android:id="@+id/btContinueOTP"
+        android:layout_width="220dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:layout_margin="40dp"
+        android:backgroundTint="@color/green"
+        android:text="Continue"
+        android:textColor="#000000"
+        android:textSize="20sp" />
+
+
+
+    <TextView
+        android:id="@+id/tvOrTry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:text="-------------------------- Resend code in 30 sec ---------------------------"
+        android:textColor="@color/black"
+        android:textSize="15sp" />
+
+
+
+</LinearLayout>

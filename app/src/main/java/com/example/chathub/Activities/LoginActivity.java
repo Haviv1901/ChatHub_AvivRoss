@@ -1,4 +1,4 @@
-package com.example.chathub;
+package com.example.chathub.Activities;
 
 
 import android.os.Bundle;
@@ -9,16 +9,18 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.content.Intent;
 
-import com.google.firebase.FirebaseApp;
+import com.example.chathub.R;
 
 public class LoginActivity extends MainActivity implements View.OnClickListener
 {
 
+    // views
     private EditText etUsername, etPassword;
     private CheckBox cbRememberMe;
     private Button btnLogin;
     private TextView btnDontHaveAccount;
     private boolean rememberMe;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -29,7 +31,6 @@ public class LoginActivity extends MainActivity implements View.OnClickListener
 
         // basic variables
         rememberMe = false;
-
 
         // views1
         etUsername = findViewById(R.id.etUsername);
@@ -70,7 +71,10 @@ public class LoginActivity extends MainActivity implements View.OnClickListener
 
     }
 
-    private void loginOnClick() {
+    private void loginOnClick()
+    {
+
+
         Intent intent = new Intent(LoginActivity.this, ChatListActivity.class);
         startActivity(intent);
     }

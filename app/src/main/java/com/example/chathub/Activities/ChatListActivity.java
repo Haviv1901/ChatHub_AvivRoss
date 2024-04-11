@@ -1,9 +1,9 @@
-package com.example.chathub;
-
-import androidx.appcompat.app.AppCompatActivity;
+package com.example.chathub.Activities;
 
 import android.os.Bundle;
 import android.widget.ListView;
+
+import com.example.chathub.R;
 
 public class ChatListActivity extends MainActivity
 {

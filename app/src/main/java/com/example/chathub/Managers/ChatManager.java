@@ -1,8 +1,9 @@
-package com.example.chathub;
+package com.example.chathub.Managers;
 
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.example.chathub.Data_Containers.Message;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
@@ -60,6 +61,22 @@ public class ChatManager
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.PNG, 30, outputStream);
         byte[] byteArray = outputStream.toByteArray();
+
+        // Check if the size exceeds 2 megabytes
+        if (byteArray.length > 2 * 1024 * 1024)
+        {
+            // If the size exceeds 2 megabytes, compress the image further or show an error message
+            // For example, compress the image further:
+            int quality = 30;
+            while (byteArray.length > 2 * 1024 * 1024 && quality > 0)
+            {
+                outputStream.reset();
+                image.compress(Bitmap.CompressFormat.PNG, quality, outputStream);
+                byteArray = outputStream.toByteArray();
+                quality -= 5;
+            }
+
+        }
 
         String imagePath = "images/" + UUID.randomUUID().toString() + ".png";
 
