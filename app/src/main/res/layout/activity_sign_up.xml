@@ -28,6 +28,8 @@
         android:id="@+id/etUsernameSignUp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/edit_text_rounded_corner"
+        android:textSize="25sp"
         android:layout_marginLeft="60dp"
         android:layout_marginTop="5dp"
         android:layout_marginRight="60dp"
@@ -40,6 +42,8 @@
         android:layout_marginLeft="60dp"
         android:layout_marginTop="5dp"
         android:layout_marginRight="60dp"
+        android:background="@drawable/edit_text_rounded_corner"
+        android:textSize="25sp"
         android:hint="Password"
         android:inputType="textPassword" />
 
@@ -51,24 +55,37 @@
         android:layout_marginTop="5dp"
         android:layout_marginRight="60dp"
         android:hint="Confirm Password"
+        android:background="@drawable/edit_text_rounded_corner"
+        android:textSize="25sp"
         android:inputType="textPassword" />
 
-    <EditText
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginLeft="60dp"
+        >
+
+        <com.hbb20.CountryCodePicker
+            android:id="@+id/login_countrycode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:ccp_showFlag="false"
+            app:ccp_showNameCode="false"
+            app:ccp_defaultNameCode="IL"
+            />
+
+        <EditText
         android:id="@+id/etPhoneNumberSignUp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="60dp"
         android:layout_marginTop="5dp"
         android:layout_marginRight="60dp"
         android:hint="Phone Number"
+        android:background="@drawable/edit_text_rounded_corner"
+        android:textSize="25sp"
         android:inputType="phone" />
-
-    <ProgressBar
-        android:id="@+id/pbSignUp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone" />
+    </LinearLayout>
 
 
     <Button
@@ -77,18 +94,11 @@
         android:layout_height="50dp"
         android:layout_gravity="center"
         android:layout_marginTop="40dp"
+        android:layout_marginBottom="40dp"
         android:backgroundTint="@color/green"
         android:text="Sign Up"
         android:textColor="#000000"
         android:textSize="20sp" />
-
-    <CheckBox
-        android:id="@+id/cbRememberMeSignUp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:buttonTint="@color/blue"
-        android:text="Remember Me" />
 
     <TextView
         android:id="@+id/tvOrTry"

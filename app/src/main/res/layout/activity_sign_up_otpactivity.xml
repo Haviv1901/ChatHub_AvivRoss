@@ -30,15 +30,14 @@
         android:layout_height="wrap_content"
         android:layout_margin="60dp"
         android:hint="Code sent"
+        android:textSize="30sp"
         android:inputType="number"
         android:background="@drawable/edit_text_rounded_corner"
         />
 
 
-
-
     <ProgressBar
-        android:id="@+id/pbSignUp"
+        android:id="@+id/pbOTPSignUp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -59,7 +58,7 @@
 
 
     <TextView
-        android:id="@+id/tvOrTry"
+        android:id="@+id/tvOTPResend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

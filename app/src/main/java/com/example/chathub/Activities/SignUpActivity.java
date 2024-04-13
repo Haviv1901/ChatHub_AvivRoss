@@ -5,47 +5,20 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-
-import com.example.chathub.Managers.UserManager;
-
 import com.example.chathub.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseException;
-import com.google.firebase.FirebaseTooManyRequestsException;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseAuthMissingActivityForRecaptchaException;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.PhoneAuthCredential;
-import com.google.firebase.auth.PhoneAuthOptions;
-import com.google.firebase.auth.PhoneAuthProvider;
+import com.hbb20.CountryCodePicker;
 
-import java.util.concurrent.TimeUnit;
-
-public class SignUpActivity extends MainActivity implements View.OnClickListener {
+public class SignUpActivity extends MainActivity implements View.OnClickListener
+{
 
     // views
+    private CountryCodePicker countryCodePicker;
     private Button btSignUp, btGoogle;
     private EditText etUsernameSignUp, etPasswordSignUp, etConfirmPasswordSignUp, etPhoneNumberSignUp;
-    private CheckBox cbRememberMeSignUp;
-    private ProgressBar pbSignUp;
-
-    // firebase:
-    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private String verificationCode;
-    private PhoneAuthProvider.ForceResendingToken resendingToken;
 
     // consts
     private final String TAG = "SignUpActivity";
-    private final Long TIMEOUT = 60L; // 60 seconds
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -61,12 +34,14 @@ public class SignUpActivity extends MainActivity implements View.OnClickListener
         etPasswordSignUp = findViewById(R.id.etPasswordSignUp);
         etConfirmPasswordSignUp = findViewById(R.id.etConfirmPasswordSignUp);
         etPhoneNumberSignUp = findViewById(R.id.etPhoneNumberSignUp);
-        cbRememberMeSignUp = findViewById(R.id.cbRememberMeSignUp);
-        pbSignUp = findViewById(R.id.pbSignUp);
+        countryCodePicker = findViewById(R.id.login_countrycode);
 
         // on clicks
         btSignUp.setOnClickListener(this);
         btGoogle.setOnClickListener(this);
+
+
+        countryCodePicker.registerCarrierNumberEditText(etPhoneNumberSignUp);
 
 
     }
@@ -98,21 +73,30 @@ public class SignUpActivity extends MainActivity implements View.OnClickListener
         String username = etUsernameSignUp.getText().toString().trim();
         String password = etPasswordSignUp.getText().toString();
         String confirmPassword = etConfirmPasswordSignUp.getText().toString();
-        String phoneNumber = etPhoneNumberSignUp.getText().toString();
+        String phoneNumber = countryCodePicker.getFullNumberWithPlus();
 
         if (!checkFieldsValidation(username, password, confirmPassword))
         {
-            return;
+            //return;
         }
 
         Log.e("SignUpActivity", "Trying to sign in with username: " + username + " and password: " + password + " and phone number: " + phoneNumber);
+
+        Intent intent = new Intent(SignUpActivity.this, SignUpOTPActivity.class);
+        intent.putExtra("username", username);
+        intent.putExtra("password", password);
+        intent.putExtra("phoneNumber", phoneNumber);
+        startActivity(intent);
 
     }
 
 
 
 
-
+    /*
+    * check validation of all fields.
+    * return true if all fields valid, false otherwise.
+    */
     private boolean checkFieldsValidation(String username, String password, String confirmPassword) {
         // Perform validation
 
@@ -160,6 +144,15 @@ public class SignUpActivity extends MainActivity implements View.OnClickListener
         {
             etConfirmPasswordSignUp.setError("Passwords do not match");
             etConfirmPasswordSignUp.requestFocus();
+            return false;
+        }
+
+        // check phone number
+
+        if(!countryCodePicker.isValidFullNumber())
+        {
+            etPhoneNumberSignUp.setError("Phone number not valid");
+            etPhoneNumberSignUp.requestFocus();
             return false;
         }
         return true;
