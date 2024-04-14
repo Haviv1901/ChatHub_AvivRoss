@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.chathub.Managers.UserManager;
 import com.example.chathub.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthProvider;
@@ -141,7 +142,11 @@ public class SignUpOTPActivity extends AppCompatActivity implements View.OnClick
                 setInProgress(false);
                 if(task.isSuccessful())
                 {
-                    Toast.makeText(SignUpOTPActivity.this, "OTP verification successful", Toast.LENGTH_SHORT).show();
+                    UserManager.signInUser(username,password,mAuth.getCurrentUser().getUid());
+
+                    Intent intent = new Intent(SignUpOTPActivity.this, ChatListActivity.class);
+                    startActivity(intent);
+                    finish();
                 }
                 else
                 {

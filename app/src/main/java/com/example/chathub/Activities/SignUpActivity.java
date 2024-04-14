@@ -14,7 +14,7 @@ public class SignUpActivity extends MainActivity implements View.OnClickListener
 
     // views
     private CountryCodePicker countryCodePicker;
-    private Button btSignUp, btGoogle;
+    private Button btSignUp;
     private EditText etUsernameSignUp, etPasswordSignUp, etConfirmPasswordSignUp, etPhoneNumberSignUp;
 
     // consts
@@ -29,7 +29,6 @@ public class SignUpActivity extends MainActivity implements View.OnClickListener
         // views
 
         btSignUp = findViewById(R.id.btSignUp);
-        btGoogle = findViewById(R.id.btGoogle);
         etUsernameSignUp = findViewById(R.id.etUsernameSignUp);
         etPasswordSignUp = findViewById(R.id.etPasswordSignUp);
         etConfirmPasswordSignUp = findViewById(R.id.etConfirmPasswordSignUp);
@@ -38,7 +37,6 @@ public class SignUpActivity extends MainActivity implements View.OnClickListener
 
         // on clicks
         btSignUp.setOnClickListener(this);
-        btGoogle.setOnClickListener(this);
 
 
         countryCodePicker.registerCarrierNumberEditText(etPhoneNumberSignUp);
@@ -54,16 +52,6 @@ public class SignUpActivity extends MainActivity implements View.OnClickListener
             // sign up
             signUpOnClick();
         }
-        else if(v == btGoogle)
-        {
-            // sign up with google
-            signUpWithGoogleOnClick();
-        }
-
-    }
-
-    private void signUpWithGoogleOnClick()
-    {
 
     }
 
@@ -77,7 +65,7 @@ public class SignUpActivity extends MainActivity implements View.OnClickListener
 
         if (!checkFieldsValidation(username, password, confirmPassword))
         {
-            //return;
+            return;
         }
 
         Log.e("SignUpActivity", "Trying to sign in with username: " + username + " and password: " + password + " and phone number: " + phoneNumber);
