@@ -1,35 +1,109 @@
 package com.example.chathub.Activities;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.example.chathub.Adapters.ChatAdapter;
+import com.example.chathub.Adapters.MessageAdapter;
+import com.example.chathub.Data_Containers.Chat;
+import com.example.chathub.Data_Containers.Message;
+import com.example.chathub.Managers.UserManager;
 import com.example.chathub.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
-public class ChatListActivity extends MainActivity
-{
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
+public class ChatListActivity extends MainActivity implements View.OnClickListener {
 
+    // views
     private ListView chatsListView;
+    private ImageView ibLogout, ibCreateNewChat;
+
+    // else
+
+    private List<Chat> chats;
+    private ChatAdapter chatAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_list);
+
+        // views
+        chatsListView = findViewById(R.id.chatList);
+        ibLogout = findViewById(R.id.ibLogout);
+        ibCreateNewChat = findViewById(R.id.ibCreateNewChat);
+
+        // onclicks
+
+        ibLogout.setOnClickListener(this);
+       // ibCreateNewChat.setOnClickListener(this);
+
+        getMessagesFromFirebase();
+
+        chatsListView.setOnItemClickListener((parent, view, position, id) -> {
+            Chat chat = chats.get(position);
+            openChatActivity(chat);
+        });
+
     }
 
 
-
-    // function to update the chat list
-    public void updateChatList()
+    /// this method will set up a listener for the messages in the chat
+    private void getMessagesFromFirebase()
     {
-        // update the chat list
+        chatManager.getChatsHandler().addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                updateMessagesList(chatManager.retrieveChats(dataSnapshot));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Handle possible errors.
+                Toast.makeText(ChatListActivity.this, "Fail to get data.", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+    }
+
+    private void updateMessagesList(List<Chat> newMessages)
+    {
+        Collections.sort(newMessages, new Comparator<Chat>()
+        {
+            @Override
+            public int compare(Chat m1, Chat m2) {
+                return Integer.compare(m1.getChatId(), m2.getChatId());
+            }
+        });
+
+        chats = newMessages;
+        chatAdapter = new ChatAdapter(ChatListActivity.this, R.layout.chat, chats);
+        chatsListView.setAdapter(chatAdapter);
     }
 
     // function to open chat activity
-    public void openChatActivity()
+    public void openChatActivity(Chat chat)
     {
         // open chat activity
+
+        chatManager.setChatName(chat.getChatName());
+        chatManager.setChatId(chat.getChatId());
+        UserManager.setCurrentUsername("this ios working");
+
+        Intent intent = new Intent(ChatListActivity.this, ChatActivity.class);
+        startActivity(intent);
     }
 
     // function to open add chat activity
@@ -38,4 +112,26 @@ public class ChatListActivity extends MainActivity
         // open add chat activity
     }
 
+    @Override
+    public void onClick(View v)
+    {
+
+        if(v == ibLogout)
+        {
+            // log out
+            logOut();
+        }
+        else if(v == ibCreateNewChat)
+        {
+            // open add chat activity
+            openAddChatActivity();
+        }
+
+    }
+
+    private void logOut()
+    {
+        UserManager.logout();
+        finish();
+    }
 }

@@ -31,6 +31,5 @@ public class MainActivity extends AppCompatActivity
 
         chatManager = new ChatManager();
 
-        loginManager = new UserManager();
     }
 }

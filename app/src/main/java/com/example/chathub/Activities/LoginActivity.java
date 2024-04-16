@@ -8,18 +8,21 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.content.Intent;
+import com.example.chathub.Managers.UserManager;
 
 import com.example.chathub.R;
+import com.hbb20.CountryCodePicker;
 
 public class LoginActivity extends MainActivity implements View.OnClickListener
 {
 
     // views
-    private EditText etUsername, etPassword;
+    private EditText etUsername, etPassword, etPhoneNumberLogin;
     private CheckBox cbRememberMe;
     private Button btnLogin;
     private TextView btnDontHaveAccount;
     private boolean rememberMe;
+    private CountryCodePicker loginPage_countrycode;
 
 
     @Override
@@ -32,12 +35,14 @@ public class LoginActivity extends MainActivity implements View.OnClickListener
         // basic variables
         rememberMe = false;
 
-        // views1
+        // views
         etUsername = findViewById(R.id.etUsername);
         etPassword = findViewById(R.id.etPassword);
         cbRememberMe = findViewById(R.id.cbRememberMe);
         btnLogin = findViewById(R.id.btLogin);
         btnDontHaveAccount = findViewById(R.id.btDontHaveAccount);
+        loginPage_countrycode = findViewById(R.id.loginPage_countrycode);
+        etPhoneNumberLogin = findViewById(R.id.etPhoneNumberLogin);
 
         etUsername.setFocusable(true);
         etUsername.setFocusableInTouchMode(true);///add this line
@@ -46,6 +51,8 @@ public class LoginActivity extends MainActivity implements View.OnClickListener
         cbRememberMe.setOnClickListener(this);
         btnLogin.setOnClickListener(this);
         btnDontHaveAccount.setOnClickListener(this);
+
+        loginPage_countrycode.registerCarrierNumberEditText(etPhoneNumberLogin);
 
 
     }
@@ -73,10 +80,49 @@ public class LoginActivity extends MainActivity implements View.OnClickListener
 
     private void loginOnClick()
     {
+        String username = etUsername.getText().toString();
+        String password = etPassword.getText().toString();
+        String phoneNumber = loginPage_countrycode.getFullNumberWithPlus();
 
+        if (!checkFieldsValidation(username, password, phoneNumber))
+        {
+            return;
+        }
+
+        UserManager.tryLogIn(username, password, phoneNumber);
 
         Intent intent = new Intent(LoginActivity.this, ChatListActivity.class);
         startActivity(intent);
+
+
+    }
+
+    private boolean checkFieldsValidation(String username, String password, String phoneNumber)
+    {
+        // username, password and phone number not empty
+        if(username.isEmpty())
+        {
+            etUsername.setError("Username is required");
+            etUsername.requestFocus();
+            return false;
+        }
+
+        if(password.isEmpty())
+        {
+            etPassword.setError("Password is required");
+            etPassword.requestFocus();
+            return false;
+        }
+
+        if(phoneNumber.isEmpty())
+        {
+            etPhoneNumberLogin.setError("Phone number is required");
+            etPhoneNumberLogin.requestFocus();
+            return false;
+        }
+
+
+        return true;
     }
 
     private void dontHaveAccountOnClick() {

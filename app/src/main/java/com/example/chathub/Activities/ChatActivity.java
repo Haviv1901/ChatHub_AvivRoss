@@ -85,7 +85,7 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
     /// this method will set up a listener for the messages in the chat
     private void getMessagesFromFirebase()
     {
-        chatManager.getChatsHandler().child("chat1").child("Messages").addValueEventListener(new ValueEventListener()
+        chatManager.getChatsHandler().child(chatManager.getChatName()).child("Messages").addValueEventListener(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -110,7 +110,7 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         });
     
         messages = newMessages;
-        messageAdapter = new MessageAdapter(ChatActivity.this, R.layout.message, R.id.tvMessageContent, messages);
+        messageAdapter = new MessageAdapter(ChatActivity.this, R.layout.message, messages);
         messegesListView.setAdapter(messageAdapter);
         messegesListView.setSelection(messages.size() - 1);
     }

@@ -3,6 +3,7 @@ package com.example.chathub.Managers;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.example.chathub.Data_Containers.Chat;
 import com.example.chathub.Data_Containers.Message;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -23,7 +24,8 @@ import java.util.UUID;
 public class ChatManager
 {
     private DatabaseReference chatsHandler;
-    private String currentChatId;
+    private int currentChatId;
+    private String currentChatName;
     private int lastMessageId;
     private FirebaseStorage sotrageHandler;
 
@@ -31,7 +33,8 @@ public class ChatManager
     {
         chatsHandler = FirebaseDatabase.getInstance().getReference("Chats");
         sotrageHandler = FirebaseStorage.getInstance();
-        currentChatId = "chat1";
+        currentChatId = -1;
+        currentChatName = "";
         setListenerToMessageId();
     }
 
@@ -40,15 +43,26 @@ public class ChatManager
         return chatsHandler;
     }
 
-    public void setChatId(String chatId)
+    public void setChatId(int chatId)
     {
         currentChatId = chatId;
     }
 
-    public String getChatId()
+    public int getChatId()
     {
         return currentChatId;
     }
+
+    public void setChatName(String chatName)
+    {
+        currentChatName = chatName;
+    }
+
+    public String getChatName()
+    {
+        return currentChatName;
+    }
+
     private String getTime()
     {
         LocalTime now = LocalTime.now();
@@ -93,7 +107,7 @@ public class ChatManager
     {
         // create a new message object
         String time =  getTime();
-        Message newMessage = new Message("tempUser", context, imagePath, time, lastMessageId);
+        Message newMessage = new Message(UserManager.getCurrentUsername(), context, imagePath, time, lastMessageId);
         sendMessage(newMessage);
 
         // update LastMessageId in database
@@ -102,20 +116,20 @@ public class ChatManager
     // sends a message object to the db
     public void sendMessage(Message message)
     {
-        chatsHandler.child(currentChatId).child("Messages").push().setValue(message);
+        chatsHandler.child(currentChatName).child("Messages").push().setValue(message);
     }
 
     // sets a given int as the next message id
     public void addToLastMessageId()
     {
-        DatabaseReference refrenceToLastMessageId = chatsHandler.child(currentChatId).child("NextMessageId");
+        DatabaseReference refrenceToLastMessageId = chatsHandler.child(currentChatName).child("NextMessageId");
         refrenceToLastMessageId.setValue(lastMessageId + 1);
         lastMessageId++;
     }
 
     public void setListenerToMessageId()
     {
-        DatabaseReference refrenceToLastMessageId = chatsHandler.child(currentChatId).child("NextMessageId");
+        DatabaseReference refrenceToLastMessageId = chatsHandler.child(currentChatName).child("NextMessageId");
         refrenceToLastMessageId.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
@@ -143,6 +157,18 @@ public class ChatManager
         }
 
         return newMessages;
+    }
+
+    public List<Chat> retrieveChats(DataSnapshot dataSnapshot)
+    {
+        List<Chat> newChats = new ArrayList<>();
+        for (DataSnapshot chatSnapshot : dataSnapshot.getChildren())
+        {
+            Chat chat = chatSnapshot.getValue(Chat.class);
+            newChats.add(chat);
+        }
+
+        return newChats;
     }
 }
 

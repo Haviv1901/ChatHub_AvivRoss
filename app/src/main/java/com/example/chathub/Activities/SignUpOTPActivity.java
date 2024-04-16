@@ -142,7 +142,7 @@ public class SignUpOTPActivity extends AppCompatActivity implements View.OnClick
                 setInProgress(false);
                 if(task.isSuccessful())
                 {
-                    UserManager.signInUser(username,password,mAuth.getCurrentUser().getUid());
+                    UserManager.registerUser(username,password,mAuth.getCurrentUser().getUid());
 
                     Intent intent = new Intent(SignUpOTPActivity.this, ChatListActivity.class);
                     startActivity(intent);

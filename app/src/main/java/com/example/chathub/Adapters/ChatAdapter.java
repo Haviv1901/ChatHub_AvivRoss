@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,45 +23,38 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 
-public class MessageAdapter extends ArrayAdapter<Message>
+public class ChatAdapter extends ArrayAdapter<Chat>
 {
     private Context context;
-    private List<Message> messageList;
+    private List<Chat> chatsList;
 
-    public MessageAdapter(@NonNull Context context, int resource, List<Message> messageList)
+    public ChatAdapter(@NonNull Context context, int resource, List<Chat> chatsList)
     {
-        super(context, resource, messageList);
+        super(context, resource, chatsList);
         this.context = context;
-        this.messageList = messageList;
+        this.chatsList = chatsList;
     }
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent)
     {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.message, null);
+        View view = inflater.inflate(R.layout.chat, null);
 
-        TextView content = view.findViewById(R.id.tvMessageContent);
-        TextView time = view.findViewById(R.id.tvMessageTime);
-        TextView sender = view.findViewById(R.id.tvSenderName);
-        ImageView image = view.findViewById(R.id.ivMessageImage);
+        TextView chatName = view.findViewById(R.id.tvChatName);
+        ImageView image = view.findViewById(R.id.ivChatImage);
 
-        Message message = messageList.get(position);
+        Chat chat = chatsList.get(position);
 
-        content.setText(message.getContent());
-        time.setText(message.getDate());
-        sender.setText(message.getSender());
+        chatName.setText(chat.getChatName());
 
-        if(message.getImage() == null || message.getImage().isEmpty())
-        {
-            image.setVisibility(View.GONE);
-        }
-        else
+
+        if(!(chat.getChatImagePath() == null || chat.getChatImagePath().isEmpty()))
         {
             // Get a reference to the storage object
             StorageReference storageReference = FirebaseStorage.getInstance().getReference();
 
-            StorageReference islandRef = storageReference.child(message.getImage());
+            StorageReference islandRef = storageReference.child(chat.getChatImagePath());
 
             final long MAX_DOWNLOAD = 1024 * 1024 * 20;
             islandRef.getBytes(MAX_DOWNLOAD).addOnSuccessListener(new OnSuccessListener<byte[]>() {
