@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.example.chathub.Activities.LoginActivity;
 import com.example.chathub.Data_Containers.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -28,65 +29,35 @@ import java.util.concurrent.TimeUnit;
 public class UserManager
 {
 
-    private static String currentUsername = "";
-    private static String currentUserUID = "";
-    private static Boolean isUserLoggedIn = false;
+    private Context context;
+
+    private String username;
+    private Boolean isUsernameSaved;
 
     // consts
-    private static String TAG = "UserManager";
+    private final String TAG = "UserManager";
 
-    // setters getter
-
-    public static void setCurrentUsername(String username)
+    public UserManager(Context context)
     {
-        currentUsername = username;
+        this.context = context;
+        username = "";
+        isUsernameSaved = false;
     }
 
-    public static String getCurrentUsername()
-    {
-        return currentUsername;
-    }
 
-    public static void setCurrentUserUID(String uid)
+    public void registerUser(String username, String userUid)
     {
-        currentUserUID = uid;
-    }
-
-    public static String getCurrentUserUID()
-    {
-        return currentUserUID;
-    }
-
-    public static void setUserLoginTrue()
-    {
-        isUserLoggedIn = true;
-    }
-
-    public static void setUserLoginFalse()
-    {
-        isUserLoggedIn = false;
-    }
-
-    public static Boolean isUserLoggedIn()
-    {
-        return isUserLoggedIn;
-    }
-    public static void registerUser(String username, String password, String userUid)
-    {
-        currentUsername = username;
-        currentUserUID = userUid;
-        isUserLoggedIn = true;
-
-        String md5Password = md5(password);
-
         // Create a User object
-        User user = new User(username, md5Password);
+        User user = new User(username);
 
         // Get a reference to the database
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
 
         // Add the user to the "/Users" path in the database
         dbRef.child("Users").child(userUid).setValue(user);
+
+        isUsernameSaved = true;
+        this.username = username;
     }
 
     public static String md5(final String s)
@@ -120,87 +91,54 @@ public class UserManager
     }
 
 
-    public static void logout()
+    public void logout()
     {
-        currentUsername = "";
-        currentUserUID = "";
-        isUserLoggedIn = false;
-
+        username = "";
+        isUsernameSaved = false;
         FirebaseAuth.getInstance().signOut();
     }
 
-public static boolean tryLogIn(Context context, String username, String password, String phoneNumber)
-{
-    FirebaseAuth auth = FirebaseAuth.getInstance();
-
-    PhoneAuthOptions options = PhoneAuthOptions.newBuilder(auth)
-        .setPhoneNumber(phoneNumber)
-        .setTimeout(60L, TimeUnit.SECONDS)
-        .setActivity((Activity) context)
-        .setCallbacks(new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-            @Override
-            public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
-                auth.signInWithCredential(phoneAuthCredential)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            FirebaseUser user = task.getResult().getUser();
-                            String uid = user.getUid();
-
-
-                            findUser(uid, username, password);
-                        }
-                        else
-                        {
-                            // Sign in failed
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Toast.makeText(context, "Phone number not found.", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-            }
-
-            @Override
-            public void onVerificationFailed(@NonNull FirebaseException e) {
-                Log.w(TAG, "onVerificationFailed", e);
-            }
-        })
-        .build();
-
-    PhoneAuthProvider.verifyPhoneNumber(options);
-
-    // TODO: Return the result of the username and password comparison.
-    return false;
-}
-
-    private static void findUser(String uid, String username, String password)
+    public void tryLogIn(String phoneNumber)
     {
-        // grab from /Users in realtime database, and key uid, compare username and password.
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
-        dbRef.child("Users").child(uid).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DataSnapshot snapshot = task.getResult();
-                    if (snapshot.exists()) {
-                        User user = snapshot.getValue(User.class);
-                        if (user.getUsername().equals(username) && user.getPassword().equals(md5(password)))
-                        {
-                            registerUser(username, password, uid);
-                        }
-                        else
-                        {
-                            Log.w(TAG, "findUser: User not found.");
-                        }
-                    }
-                    else
-                    {
-                        Log.w(TAG, "findUser: User not found.");
-                    }
-                }
-                else
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+
+        PhoneAuthOptions options = PhoneAuthOptions.newBuilder(auth)
+            .setPhoneNumber(phoneNumber)
+            .setTimeout(60L, TimeUnit.SECONDS)
+            .setActivity((Activity) context)
+            .setCallbacks(new PhoneAuthProvider.OnVerificationStateChangedCallbacks()
+            {
+                @Override
+                public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential)
                 {
-                    Log.w(TAG, "findUser: Error getting data", task.getException());
+                    auth.signInWithCredential(phoneAuthCredential)
+                        .addOnCompleteListener(task ->
+                        {
+                            ((LoginActivity)context).loginSuccess();
+                        });
                 }
-            }
-        });
+                @Override
+                public void onVerificationFailed(@NonNull FirebaseException e)
+                {
+                    ((LoginActivity)context).loginFailed();
+                }
+            })
+            .build();
+
+        PhoneAuthProvider.verifyPhoneNumber(options);
+    }
+    public String getCurrentUsername()
+    {
+        return "Not Implemented";
+    }
+
+    public String getCurrentUserUID()
+    {
+        return "Not Implemented";
+    }
+
+    public Boolean isUserLoggedIn()
+    {
+        return false;
     }
 }

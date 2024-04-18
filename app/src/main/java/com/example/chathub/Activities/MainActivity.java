@@ -15,7 +15,6 @@ public class MainActivity extends AppCompatActivity
     protected FirebaseDatabase firebaseDatabase;
     protected DatabaseReference mDatabase;
     protected ChatManager chatManager;
-    protected UserManager loginManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -27,9 +26,6 @@ public class MainActivity extends AppCompatActivity
         firebaseDatabase = FirebaseDatabase.getInstance();
         mDatabase = firebaseDatabase.getReference();
 
-        // init chat and login managers
-
-        chatManager = new ChatManager();
 
     }
 }

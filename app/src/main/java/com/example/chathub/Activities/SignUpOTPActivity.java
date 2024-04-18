@@ -42,14 +42,17 @@ public class SignUpOTPActivity extends AppCompatActivity implements View.OnClick
     private PhoneAuthProvider.ForceResendingToken resendingToken;
     private Long timeoutSeconds = 60L;
     private String verificationCode;
+    private UserManager userManager;
 
     // log in info
-    private String username, password, phoneNumber;
+    private String username, phoneNumber;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up_otpactivity);
+
+         userManager = new UserManager(this);
 
         // views
         etOTPConfirm = findViewById(R.id.etOTPConfirm);
@@ -62,7 +65,6 @@ public class SignUpOTPActivity extends AppCompatActivity implements View.OnClick
 
         // get user info
         username = getIntent().getStringExtra("username");
-        password = getIntent().getStringExtra("password");
         phoneNumber = getIntent().getStringExtra("phoneNumber");
 
 
@@ -131,7 +133,8 @@ public class SignUpOTPActivity extends AppCompatActivity implements View.OnClick
         }
     }
 
-    void signIn(PhoneAuthCredential phoneAuthCredential){
+    void signIn(PhoneAuthCredential phoneAuthCredential)
+    {
         //login and go to next activity
         setInProgress(true);
         mAuth.signInWithCredential(phoneAuthCredential).addOnCompleteListener(new OnCompleteListener<AuthResult>()
@@ -142,7 +145,7 @@ public class SignUpOTPActivity extends AppCompatActivity implements View.OnClick
                 setInProgress(false);
                 if(task.isSuccessful())
                 {
-                    UserManager.registerUser(username,password,mAuth.getCurrentUser().getUid());
+                    userManager.registerUser(username, mAuth.getCurrentUser().getUid());
 
                     Intent intent = new Intent(SignUpOTPActivity.this, ChatListActivity.class);
                     startActivity(intent);

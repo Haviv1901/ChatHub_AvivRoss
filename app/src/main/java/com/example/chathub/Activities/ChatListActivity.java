@@ -27,6 +27,7 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
     // views
     private ListView chatsListView;
     private ImageView ibLogout, ibCreateNewChat;
+    private UserManager userManager;
 
     // else
 
@@ -38,6 +39,9 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_list);
+
+        // managers
+        userManager = new UserManager(this);
 
         // views
         chatsListView = findViewById(R.id.chatList);
@@ -100,7 +104,6 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
 
         chatManager.setChatName(chat.getChatName());
         chatManager.setChatId(chat.getChatId());
-        UserManager.setCurrentUsername("this ios working");
 
         Intent intent = new Intent(ChatListActivity.this, ChatActivity.class);
         startActivity(intent);
@@ -131,7 +134,7 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
 
     private void logOut()
     {
-        UserManager.logout();
+        userManager.logout();
         finish();
     }
 }

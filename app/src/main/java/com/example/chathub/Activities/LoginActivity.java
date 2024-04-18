@@ -2,12 +2,16 @@ package com.example.chathub.Activities;
 
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.content.Intent;
+import android.widget.Toast;
+
 import com.example.chathub.Managers.UserManager;
 
 import com.example.chathub.R;
@@ -17,12 +21,16 @@ public class LoginActivity extends MainActivity implements View.OnClickListener
 {
 
     // views
-    private EditText etUsername, etPassword, etPhoneNumberLogin;
+    private EditText etPhoneNumberLogin;
+    private ProgressBar pbOTPLogin;
     private CheckBox cbRememberMe;
     private Button btnLogin;
-    private TextView btnDontHaveAccount;
+    private TextView btnDontHaveAccount, tvErrorMsg;
     private boolean rememberMe;
     private CountryCodePicker loginPage_countrycode;
+
+    // manager
+    private UserManager userManager;
 
 
     @Override
@@ -31,22 +39,24 @@ public class LoginActivity extends MainActivity implements View.OnClickListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        // init manager
+        userManager = new UserManager(this);
 
         // basic variables
         rememberMe = false;
 
         // views
-        etUsername = findViewById(R.id.etUsername);
-        etPassword = findViewById(R.id.etPassword);
+        pbOTPLogin = findViewById(R.id.pbOTPLogin);
         cbRememberMe = findViewById(R.id.cbRememberMe);
         btnLogin = findViewById(R.id.btLogin);
         btnDontHaveAccount = findViewById(R.id.btDontHaveAccount);
         loginPage_countrycode = findViewById(R.id.loginPage_countrycode);
         etPhoneNumberLogin = findViewById(R.id.etPhoneNumberLogin);
+        tvErrorMsg = findViewById(R.id.tvErrorMsg);
 
-        etUsername.setFocusable(true);
-        etUsername.setFocusableInTouchMode(true);///add this line
-        etUsername.requestFocus();
+        etPhoneNumberLogin.setFocusable(true);
+        etPhoneNumberLogin.setFocusableInTouchMode(true);
+        etPhoneNumberLogin.requestFocus();
 
         cbRememberMe.setOnClickListener(this);
         btnLogin.setOnClickListener(this);
@@ -80,43 +90,61 @@ public class LoginActivity extends MainActivity implements View.OnClickListener
 
     private void loginOnClick()
     {
-        String username = etUsername.getText().toString();
-        String password = etPassword.getText().toString();
+        setLoadingOn();
         String phoneNumber = loginPage_countrycode.getFullNumberWithPlus();
 
-        if (!checkFieldsValidation(username, password, phoneNumber))
+        if (!checkFieldsValidation(phoneNumber))
         {
             return;
         }
 
-        UserManager.tryLogIn(username, password, phoneNumber);
+        userManager.tryLogIn(phoneNumber);
+
+    }
+    
+    public void loginFailed()
+    {
+        setLoadingOff();
+
+        setErrorMsg("Login failed");
+        Log.e("LoginActivity", "Login failed");
+    }
+
+    public void loginSuccess()
+    {
+        setLoadingOff();
 
         Intent intent = new Intent(LoginActivity.this, ChatListActivity.class);
         startActivity(intent);
+        finish();
 
-
+        Log.e("LoginActivity", "Login success");
     }
 
-    private boolean checkFieldsValidation(String username, String password, String phoneNumber)
+    private void setLoadingOn()
     {
-        // username, password and phone number not empty
-        if(username.isEmpty())
-        {
-            etUsername.setError("Username is required");
-            etUsername.requestFocus();
-            return false;
-        }
+        pbOTPLogin.setVisibility(View.VISIBLE);
+    }
 
-        if(password.isEmpty())
-        {
-            etPassword.setError("Password is required");
-            etPassword.requestFocus();
-            return false;
-        }
+    private void setLoadingOff()
+    {
+        pbOTPLogin.setVisibility(View.GONE);
+    }
+
+    private boolean checkFieldsValidation(String phoneNumber)
+    {
 
         if(phoneNumber.isEmpty())
         {
-            etPhoneNumberLogin.setError("Phone number is required");
+            setErrorMsg("Phone number is required");
+            etPhoneNumberLogin.requestFocus();
+            return false;
+        }
+
+        // check for phone number length 8-12
+        if(phoneNumber.length() < 8 || phoneNumber.length() > 12)
+        {
+            setErrorMsg("Phone number must be between 8-12 digits");
             etPhoneNumberLogin.requestFocus();
             return false;
         }
@@ -125,7 +153,8 @@ public class LoginActivity extends MainActivity implements View.OnClickListener
         return true;
     }
 
-    private void dontHaveAccountOnClick() {
+    private void dontHaveAccountOnClick()
+    {
         Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
         startActivity(intent);
     }
@@ -133,5 +162,16 @@ public class LoginActivity extends MainActivity implements View.OnClickListener
     private void rememberMeOnClick()
     {
         rememberMe = !rememberMe;
+    }
+
+    private void setErrorMsg(String msg)
+    {
+        tvErrorMsg.setVisibility(View.VISIBLE);
+        tvErrorMsg.setText(msg);
+    }
+
+    private void hideErrorMsg()
+    {
+        tvErrorMsg.setVisibility(View.GONE);
     }
 }
