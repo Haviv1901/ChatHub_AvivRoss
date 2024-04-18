@@ -9,15 +9,19 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.chathub.Data_Containers.Message;
 import com.example.chathub.Adapters.MessageAdapter;
+import com.example.chathub.Managers.ChatManager;
+import com.example.chathub.Managers.UserManager;
 import com.example.chathub.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,12 +41,19 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
     private ImageView ibBack, ibCameraButton, ibMicrophoneButton, ibSendButton, ivImage, ivXIcon;
     private EditText etMessage;
     private LinearLayout imageBar;
+    private TextView tvGroupName;
 
     // else
     private MessageAdapter messageAdapter;
     private List<Message> messages;
     private Boolean isImage;
     private Bitmap image;
+
+    // managers
+    private ChatManager chatManager;
+    private UserManager userManager;
+
+    private final String TAG = "ChatActivity";
 
 
     @Override
@@ -51,6 +62,18 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
+        // managers
+        Intent intent = getIntent();
+        String chatName = intent.getStringExtra("chatName");
+        int chatId = intent.getIntExtra("chatId", -1);
+
+        if(chatId == -1)
+        {
+            Log.e(TAG, "Error: failed to get chat id, set to -1");
+        }
+
+        chatManager = new ChatManager(chatName, chatId);
+        userManager = new UserManager(this);
 
 
         // views
@@ -64,6 +87,7 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         ivImage = findViewById(R.id.ivImage);
         imageBar = findViewById(R.id.imageBar);
         ivXIcon = findViewById(R.id.ivXIcon);
+        tvGroupName = findViewById(R.id.tvGroupName);
 
         // onclicks
 
@@ -72,6 +96,10 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         ibMicrophoneButton.setOnClickListener(this);
         ibSendButton.setOnClickListener(this);
         ivXIcon.setOnClickListener(this);
+
+
+        // set group name
+        tvGroupName.setText(chatName);
 
         // set listener
         getMessagesFromFirebase();
@@ -180,34 +208,34 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         startActivityForResult(intent,0);
     }
 
-@Override
-protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
-{
-    super.onActivityResult(requestCode, resultCode, data);
-    if (resultCode == Activity.RESULT_OK) {
-        Uri selectedImage = data.getData();
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2)
-        {
-            getContentResolver().takePersistableUriPermission(selectedImage, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            Uri selectedImage = data.getData();
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2)
+            {
+                getContentResolver().takePersistableUriPermission(selectedImage, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            }
 
 
 
-        //put image in ImageView
-        ivImage.setImageURI(selectedImage);
+            //put image in ImageView
+            ivImage.setImageURI(selectedImage);
 
-        // Get Bitmap from Uri
-        try
-        {
-            image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
-            showImageBar();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
+            // Get Bitmap from Uri
+            try
+            {
+                image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+                showImageBar();
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
-}
 
     private void sendMessage()
     {
@@ -222,11 +250,11 @@ protected void onActivityResult(int requestCode, int resultCode, @Nullable Inten
         // send message to data base
         if(isImage)
         {
-            chatManager.sendMessage(message, image);
+            chatManager.sendMessage(message, image, userManager.getCurrentUsername());
         }
         else
         {
-            chatManager.sendMessage(message);
+            chatManager.sendMessage(message, userManager.getCurrentUsername());
         }
 
 

@@ -1,6 +1,8 @@
 package com.example.chathub.Data_Containers;
 
 
+import androidx.annotation.NonNull;
+
 public class Message {
     private String sender;
     private String content;
@@ -70,5 +72,13 @@ public class Message {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    @NonNull
+    @Override
+    public String toString()
+    {
+        return "Sender: " + sender + ", Content: " + content + ", Image: " + image + ", Date: " + date + ", MsgId: " + msgId;
+
     }
 }

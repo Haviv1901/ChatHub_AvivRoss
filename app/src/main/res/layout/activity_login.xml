@@ -19,24 +19,6 @@
         android:layout_gravity="center"
         />
 
-    <EditText
-        android:id="@+id/etUsername"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Username"
-        android:layout_margin="40dp"
-        />
-
-    <EditText
-        android:id="@+id/etPassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Password"
-        android:inputType="textPassword"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp"
-        />
-
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -119,6 +101,6 @@
         android:textColor="@color/blue"
         android:textSize="15sp"
         android:layout_margin="40dp"
-        android:layout_gravity="center"
+        android:layout_gravity="bottom"
         />
 </LinearLayout>

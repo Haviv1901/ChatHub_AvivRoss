@@ -3,11 +3,13 @@ package com.example.chathub.Managers;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.example.chathub.Activities.ChatListActivity;
 import com.example.chathub.Activities.LoginActivity;
 import com.example.chathub.Data_Containers.User;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -33,15 +35,58 @@ public class UserManager
 
     private String username;
     private Boolean isUsernameSaved;
+    private FirebaseAuth mAuth;
 
     // consts
     private final String TAG = "UserManager";
 
     public UserManager(Context context)
     {
+        mAuth = FirebaseAuth.getInstance();
+
         this.context = context;
-        username = "";
         isUsernameSaved = false;
+        initUsername();
+    }
+
+    private void initUsername()
+    {
+        if(isUsernameSaved)
+        {
+            return;
+        }
+
+
+        if(isUserLoggedIn())
+        {
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+            String uid = currentUser.getUid();
+            // snapshot the realtime database
+            DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
+            dbRef.child("Users").child(uid).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>()
+            {
+                @Override
+                public void onComplete(@NonNull Task<DataSnapshot> task)
+                {
+                    if(task.isSuccessful())
+                    {
+                        DataSnapshot snapshot = task.getResult();
+                        if(snapshot.exists())
+                        {
+                            User user = snapshot.getValue(User.class);
+                            username = user.getUsername();
+                            isUsernameSaved = true;
+                        }
+                    }
+                    else
+                    {
+                        username = "";
+                        isUsernameSaved = false;
+                    }
+                }
+            });
+            return;
+        }
     }
 
 
@@ -95,50 +140,22 @@ public class UserManager
     {
         username = "";
         isUsernameSaved = false;
-        FirebaseAuth.getInstance().signOut();
-    }
-
-    public void tryLogIn(String phoneNumber)
-    {
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-
-        PhoneAuthOptions options = PhoneAuthOptions.newBuilder(auth)
-            .setPhoneNumber(phoneNumber)
-            .setTimeout(60L, TimeUnit.SECONDS)
-            .setActivity((Activity) context)
-            .setCallbacks(new PhoneAuthProvider.OnVerificationStateChangedCallbacks()
-            {
-                @Override
-                public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential)
-                {
-                    auth.signInWithCredential(phoneAuthCredential)
-                        .addOnCompleteListener(task ->
-                        {
-                            ((LoginActivity)context).loginSuccess();
-                        });
-                }
-                @Override
-                public void onVerificationFailed(@NonNull FirebaseException e)
-                {
-                    ((LoginActivity)context).loginFailed();
-                }
-            })
-            .build();
-
-        PhoneAuthProvider.verifyPhoneNumber(options);
+        mAuth.signOut();
+        Log.e(TAG, "User logged out");
     }
     public String getCurrentUsername()
     {
-        return "Not Implemented";
-    }
-
-    public String getCurrentUserUID()
-    {
-        return "Not Implemented";
+        initUsername();
+        return username;
     }
 
     public Boolean isUserLoggedIn()
     {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if(currentUser != null)
+        {
+            return true;
+        }
         return false;
     }
 }

@@ -14,7 +14,6 @@ public class MainActivity extends AppCompatActivity
 
     protected FirebaseDatabase firebaseDatabase;
     protected DatabaseReference mDatabase;
-    protected ChatManager chatManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)

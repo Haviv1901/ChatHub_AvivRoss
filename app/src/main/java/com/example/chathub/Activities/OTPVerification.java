@@ -29,7 +29,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-public class SignUpOTPActivity extends AppCompatActivity implements View.OnClickListener
+public class OTPVerification extends AppCompatActivity implements View.OnClickListener
 {
     // views
     private EditText etOTPConfirm;
@@ -45,7 +45,9 @@ public class SignUpOTPActivity extends AppCompatActivity implements View.OnClick
     private UserManager userManager;
 
     // log in info
-    private String username, phoneNumber;
+    private String phoneNumber;
+    // consts
+    private final String TAG = "OTPVerification";
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -64,7 +66,6 @@ public class SignUpOTPActivity extends AppCompatActivity implements View.OnClick
         btContinueOTP.setOnClickListener(this);
 
         // get user info
-        username = getIntent().getStringExtra("username");
         phoneNumber = getIntent().getStringExtra("phoneNumber");
 
 
@@ -93,9 +94,10 @@ public class SignUpOTPActivity extends AppCompatActivity implements View.OnClick
                             @Override
                             public void onVerificationFailed(@NonNull FirebaseException e)
                             {
-                                Toast.makeText(SignUpOTPActivity.this, "OTP verification failed", Toast.LENGTH_SHORT).show();
-                                Log.e("SignUpOTPActivity", "onVerificationFailed: " + e.getMessage());
+                                Toast.makeText(OTPVerification.this, "OTP verification failed", Toast.LENGTH_SHORT).show();
+                                Log.e(TAG, "onVerificationFailed: " + e.getMessage());
                                 setInProgress(false);
+                                finish();
                             }
 
                             @Override
@@ -104,7 +106,7 @@ public class SignUpOTPActivity extends AppCompatActivity implements View.OnClick
                                 super.onCodeSent(s, forceResendingToken);
                                 verificationCode = s;
                                 resendingToken = forceResendingToken;
-                                Toast.makeText(SignUpOTPActivity.this, "OTP sent successfully", Toast.LENGTH_SHORT).show();
+                                Log.e(TAG, "Code sent to phone number");
                                 setInProgress(false);
                             }
                         });
@@ -143,17 +145,20 @@ public class SignUpOTPActivity extends AppCompatActivity implements View.OnClick
             public void onComplete(@NonNull Task<AuthResult> task)
             {
                 setInProgress(false);
+
                 if(task.isSuccessful())
                 {
-                    userManager.registerUser(username, mAuth.getCurrentUser().getUid());
-
-                    Intent intent = new Intent(SignUpOTPActivity.this, ChatListActivity.class);
-                    startActivity(intent);
+                    // finish intent and return result successfuill with user uid
+                    Intent intent = getIntent();
+                    intent.putExtra("uid",mAuth.getCurrentUser().getUid());
+                    setResult(RESULT_OK,intent);
                     finish();
                 }
                 else
                 {
-                    Toast.makeText(SignUpOTPActivity.this, "OTP verification failed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(OTPVerification.this, "OTP verification failed", Toast.LENGTH_SHORT).show();
+                    Log.e("SignUpOTPActivity", "Sign In failed. -> " + task.getException().getMessage());
+                    finish();
                 }
             }
         });

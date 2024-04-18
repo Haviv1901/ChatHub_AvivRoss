@@ -12,6 +12,7 @@ import com.example.chathub.Adapters.ChatAdapter;
 import com.example.chathub.Adapters.MessageAdapter;
 import com.example.chathub.Data_Containers.Chat;
 import com.example.chathub.Data_Containers.Message;
+import com.example.chathub.Managers.ChatManager;
 import com.example.chathub.Managers.UserManager;
 import com.example.chathub.R;
 import com.google.firebase.database.DataSnapshot;
@@ -34,6 +35,9 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
     private List<Chat> chats;
     private ChatAdapter chatAdapter;
 
+    // managers
+    private ChatManager chatManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -41,6 +45,7 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
         setContentView(R.layout.activity_chat_list);
 
         // managers
+        chatManager = new ChatManager();
         userManager = new UserManager(this);
 
         // views
@@ -102,10 +107,9 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
     {
         // open chat activity
 
-        chatManager.setChatName(chat.getChatName());
-        chatManager.setChatId(chat.getChatId());
-
         Intent intent = new Intent(ChatListActivity.this, ChatActivity.class);
+        intent.putExtra("chatName", chat.getChatName());
+        intent.putExtra("chatId", chat.getChatId());
         startActivity(intent);
     }
 
@@ -135,6 +139,8 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
     private void logOut()
     {
         userManager.logout();
+        Intent intent = new Intent(ChatListActivity.this, LoginActivity.class);
+        startActivity(intent);
         finish();
     }
 }

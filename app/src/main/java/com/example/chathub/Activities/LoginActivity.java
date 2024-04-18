@@ -15,6 +15,8 @@ import android.widget.Toast;
 import com.example.chathub.Managers.UserManager;
 
 import com.example.chathub.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.hbb20.CountryCodePicker;
 
 public class LoginActivity extends MainActivity implements View.OnClickListener
@@ -23,14 +25,14 @@ public class LoginActivity extends MainActivity implements View.OnClickListener
     // views
     private EditText etPhoneNumberLogin;
     private ProgressBar pbOTPLogin;
-    private CheckBox cbRememberMe;
     private Button btnLogin;
     private TextView btnDontHaveAccount, tvErrorMsg;
-    private boolean rememberMe;
     private CountryCodePicker loginPage_countrycode;
 
     // manager
     private UserManager userManager;
+    // firebase
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
 
     @Override
@@ -42,12 +44,20 @@ public class LoginActivity extends MainActivity implements View.OnClickListener
         // init manager
         userManager = new UserManager(this);
 
-        // basic variables
-        rememberMe = false;
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if(userManager.isUserLoggedIn())
+        {
+            Intent intent = new Intent(LoginActivity.this, ChatListActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
+
+
+
 
         // views
         pbOTPLogin = findViewById(R.id.pbOTPLogin);
-        cbRememberMe = findViewById(R.id.cbRememberMe);
         btnLogin = findViewById(R.id.btLogin);
         btnDontHaveAccount = findViewById(R.id.btDontHaveAccount);
         loginPage_countrycode = findViewById(R.id.loginPage_countrycode);
@@ -58,7 +68,6 @@ public class LoginActivity extends MainActivity implements View.OnClickListener
         etPhoneNumberLogin.setFocusableInTouchMode(true);
         etPhoneNumberLogin.requestFocus();
 
-        cbRememberMe.setOnClickListener(this);
         btnLogin.setOnClickListener(this);
         btnDontHaveAccount.setOnClickListener(this);
 
@@ -81,10 +90,6 @@ public class LoginActivity extends MainActivity implements View.OnClickListener
             //go to register activity
             dontHaveAccountOnClick();
         }
-        else if(v == cbRememberMe)
-        {
-            rememberMeOnClick();
-        }
 
     }
 
@@ -95,11 +100,29 @@ public class LoginActivity extends MainActivity implements View.OnClickListener
 
         if (!checkFieldsValidation(phoneNumber))
         {
+            setLoadingOff();
             return;
         }
 
-        userManager.tryLogIn(phoneNumber);
+        Intent intent = new Intent(LoginActivity.this, OTPVerification.class);
+        intent.putExtra("phoneNumber", phoneNumber);
+        startActivityForResult(intent, 0);
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == RESULT_OK)
+        {
+            loginSuccess();
+        }
+        else
+        {
+            loginFailed();
+        }
     }
     
     public void loginFailed()
@@ -141,14 +164,6 @@ public class LoginActivity extends MainActivity implements View.OnClickListener
             return false;
         }
 
-        // check for phone number length 8-12
-        if(phoneNumber.length() < 8 || phoneNumber.length() > 12)
-        {
-            setErrorMsg("Phone number must be between 8-12 digits");
-            etPhoneNumberLogin.requestFocus();
-            return false;
-        }
-
 
         return true;
     }
@@ -159,10 +174,6 @@ public class LoginActivity extends MainActivity implements View.OnClickListener
         startActivity(intent);
     }
 
-    private void rememberMeOnClick()
-    {
-        rememberMe = !rememberMe;
-    }
 
     private void setErrorMsg(String msg)
     {

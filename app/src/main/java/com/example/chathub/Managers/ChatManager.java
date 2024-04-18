@@ -3,6 +3,8 @@ package com.example.chathub.Managers;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.example.chathub.Data_Containers.Chat;
 import com.example.chathub.Data_Containers.Message;
 import com.google.firebase.database.DatabaseReference;
@@ -35,27 +37,20 @@ public class ChatManager
         sotrageHandler = FirebaseStorage.getInstance();
         currentChatId = -1;
         currentChatName = "";
+    }
+
+    public ChatManager(String currentChatName, int currentChatId)
+    {
+        chatsHandler = FirebaseDatabase.getInstance().getReference("Chats");
+        sotrageHandler = FirebaseStorage.getInstance();
+        this.currentChatId = currentChatId;
+        this.currentChatName = currentChatName;
         setListenerToMessageId();
     }
 
     public DatabaseReference getChatsHandler()
     {
         return chatsHandler;
-    }
-
-    public void setChatId(int chatId)
-    {
-        currentChatId = chatId;
-    }
-
-    public int getChatId()
-    {
-        return currentChatId;
-    }
-
-    public void setChatName(String chatName)
-    {
-        currentChatName = chatName;
     }
 
     public String getChatName()
@@ -69,45 +64,30 @@ public class ChatManager
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         return now.format(formatter);
     }
-    public void sendMessage(String context, Bitmap image)
+    public void sendMessage(String context, Bitmap image, String username)
     {
         // create a byte array of the image
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.PNG, 30, outputStream);
+        image.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
         byte[] byteArray = outputStream.toByteArray();
 
-        // Check if the size exceeds 2 megabytes
-        if (byteArray.length > 2 * 1024 * 1024)
-        {
-            // If the size exceeds 2 megabytes, compress the image further or show an error message
-            // For example, compress the image further:
-            int quality = 30;
-            while (byteArray.length > 2 * 1024 * 1024 && quality > 0)
-            {
-                outputStream.reset();
-                image.compress(Bitmap.CompressFormat.PNG, quality, outputStream);
-                byteArray = outputStream.toByteArray();
-                quality -= 5;
-            }
-
-        }
 
         String imagePath = "images/" + UUID.randomUUID().toString() + ".png";
 
         // upload the image to the storage
         UploadTask uploadTask = sotrageHandler.getReference(imagePath).putBytes(byteArray);
 
-        sendMessage(context, imagePath);
+        sendMessage(context, imagePath, username);
     }
-    public void sendMessage(String context)
+    public void sendMessage(String context, String username)
     {
-        sendMessage(context, "");
+        sendMessage(context, "", username);
     }
-    public void sendMessage(String context, String imagePath)
+    public void sendMessage(String context, String imagePath, String username)
     {
         // create a new message object
         String time =  getTime();
-        Message newMessage = new Message(UserManager.getCurrentUsername(), context, imagePath, time, lastMessageId);
+        Message newMessage = new Message(username, context, imagePath, time, lastMessageId);
         sendMessage(newMessage);
 
         // update LastMessageId in database
@@ -116,8 +96,15 @@ public class ChatManager
     // sends a message object to the db
     public void sendMessage(Message message)
     {
+        msgSentLog(message);
         chatsHandler.child(currentChatName).child("Messages").push().setValue(message);
     }
+
+    private void msgSentLog(Message message)
+    {
+        Log.e("ChatManager", "Message sent: " + message.toString());
+    }
+
 
     // sets a given int as the next message id
     public void addToLastMessageId()
