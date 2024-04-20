@@ -67,12 +67,9 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         String chatName = intent.getStringExtra("chatName");
         int chatId = intent.getIntExtra("chatId", -1);
 
-        if(chatId == -1)
-        {
-            Log.e(TAG, "Error: failed to get chat id, set to -1");
-        }
+        checkForValidChat(chatName, chatId);
 
-        chatManager = new ChatManager(chatName, chatId);
+        chatManager = new ChatManager(chatName, chatId, this);
         userManager = new UserManager(this);
 
 
@@ -108,6 +105,19 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         hideImageBar();
 
 
+    }
+
+    private void checkForValidChat(String chatName, int chatId)
+    {
+        if(chatId == -1)
+        {
+            Log.e(TAG, "Error: failed to get chat id, set to -1");
+        }
+        if(chatName == null)
+        {
+            Log.e(TAG, "Error: failed to get chat name");
+            finish();
+        }
     }
 
     /// this method will set up a listener for the messages in the chat

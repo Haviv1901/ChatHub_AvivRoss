@@ -45,7 +45,7 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
         setContentView(R.layout.activity_chat_list);
 
         // managers
-        chatManager = new ChatManager();
+        chatManager = new ChatManager(this);
         userManager = new UserManager(this);
 
         // views
@@ -56,7 +56,7 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
         // onclicks
 
         ibLogout.setOnClickListener(this);
-       // ibCreateNewChat.setOnClickListener(this);
+        ibCreateNewChat.setOnClickListener(this);
 
         getMessagesFromFirebase();
 
@@ -75,7 +75,7 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
         {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                updateMessagesList(chatManager.retrieveChats(dataSnapshot));
+                updateMessagesList(chatManager.retrieveChatsLoggedUserParticipate(dataSnapshot));
             }
 
             @Override
@@ -116,7 +116,8 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
     // function to open add chat activity
     public void openAddChatActivity()
     {
-        // open add chat activity
+        Intent intent = new Intent(ChatListActivity.this, CreateChat_NameAndProfilePic.class);
+        startActivity(intent);
     }
 
     @Override

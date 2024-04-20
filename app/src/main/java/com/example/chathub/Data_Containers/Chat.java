@@ -13,12 +13,13 @@ public class Chat
     public Chat()
     {
     }
-    public Chat(String chatName, String chatImagePath, String members, int nextMessageId)
+    public Chat(String chatName, String chatImagePath, String members, int nextMessageId, int chatId)
     {
         this.chatName = chatName;
         this.chatImagePath = chatImagePath;
         Members = members;
         NextMessageId = nextMessageId;
+        this.chatId = chatId;
     }
 
     public String getChatName()

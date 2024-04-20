@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activities.CreateChat_ChooseParticipants"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvChatNameChoosePart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Chat Name"
+        android:textStyle="bold"
+        android:textSize="24sp"
+        android:gravity="center_horizontal"
+        android:padding="16dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        >
+
+
+        <ImageView
+            android:id="@+id/ivChatPicChoosePart"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:scaleType="fitXY"
+            android:src="@drawable/search_icon"
+            android:clickable="false"
+            />
+
+        <EditText
+            android:id="@+id/etSearchParticipants"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="    Search"
+            android:inputType="text"
+            android:background="@drawable/buttonlogin"
+            />
+
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/lvParticipants"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clickable="false"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btBackToChooseNameAndPic"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textStyle="bold"
+            android:backgroundTint="@color/green"
+            android:text="Back" />
+
+        <Button
+            android:id="@+id/btCreateChat"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textStyle="bold"
+            android:backgroundTint="@color/green"
+            android:text="Create Chat" />
+
+    </LinearLayout>
+
+</LinearLayout>

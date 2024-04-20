@@ -1,32 +1,22 @@
 package com.example.chathub.Managers;
 
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.example.chathub.Activities.ChatListActivity;
-import com.example.chathub.Activities.LoginActivity;
 import com.example.chathub.Data_Containers.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.PhoneAuthCredential;
-import com.google.firebase.auth.PhoneAuthOptions;
-import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.concurrent.TimeUnit;
 
 public class UserManager
 {
@@ -34,6 +24,7 @@ public class UserManager
     private Context context;
 
     private String username;
+    private String uid;
     private Boolean isUsernameSaved;
     private FirebaseAuth mAuth;
 
@@ -46,10 +37,10 @@ public class UserManager
 
         this.context = context;
         isUsernameSaved = false;
-        initUsername();
+        initUsernameAndUid();
     }
 
-    private void initUsername()
+    private void initUsernameAndUid()
     {
         if(isUsernameSaved)
         {
@@ -60,10 +51,12 @@ public class UserManager
         if(isUserLoggedIn())
         {
             FirebaseUser currentUser = mAuth.getCurrentUser();
-            String uid = currentUser.getUid();
+            String currentUserUid = currentUser.getUid();
+            this.uid = currentUserUid;
+
             // snapshot the realtime database
             DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
-            dbRef.child("Users").child(uid).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>()
+            dbRef.child("Users").child(currentUserUid).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>()
             {
                 @Override
                 public void onComplete(@NonNull Task<DataSnapshot> task)
@@ -81,6 +74,7 @@ public class UserManager
                     else
                     {
                         username = "";
+                        uid = "";
                         isUsernameSaved = false;
                     }
                 }
@@ -139,14 +133,21 @@ public class UserManager
     public void logout()
     {
         username = "";
+        this.uid = "";
         isUsernameSaved = false;
         mAuth.signOut();
         Log.e(TAG, "User logged out");
     }
     public String getCurrentUsername()
     {
-        initUsername();
+        initUsernameAndUid();
         return username;
+    }
+
+    public String getCurrentUid()
+    {
+        initUsernameAndUid();
+        return uid;
     }
 
     public Boolean isUserLoggedIn()
