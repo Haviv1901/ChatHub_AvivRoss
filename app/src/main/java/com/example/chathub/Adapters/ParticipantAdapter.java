@@ -42,10 +42,12 @@ public class ParticipantAdapter extends ArrayAdapter<Participant>
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.participant, null);
 
+        Participant participant = participantList.get(position);
+
         TextView partUsername = view.findViewById(R.id.tvParticipantName);
         CheckBox cbIsChoose = view.findViewById(R.id.cbIsChoosen);
 
-        Participant participant = participantList.get(position);
+
 
         partUsername.setText(participant.getUsername());
         cbIsChoose.setChecked(participant.isSelected());

@@ -64,6 +64,7 @@ public class CreateChat_ChooseParticipants extends AppCompatActivity implements 
         userManager = new UserManager(this);
         participants = new ArrayList<Participant>();
         selectedParticipants = new ArrayList<Participant>();
+        selectedParticipants.add(new Participant(userManager.getCurrentUsername(), userManager.getCurrentUid()));
 
         // views
         btCreateChat = findViewById(R.id.btCreateChat);
@@ -106,8 +107,22 @@ public class CreateChat_ChooseParticipants extends AppCompatActivity implements 
 
     private void setParticipantAdapter()
     {
+        removeUserLoggedInFromParticipantsList();
         participantAdapter = new ParticipantAdapter(this, R.layout.participant, participants);
         lvParticipants.setAdapter(participantAdapter);
+
+    }
+
+    private void removeUserLoggedInFromParticipantsList()
+    {
+        for (int i = 0; i < participants.size(); i++)
+        {
+            if(participants.get(i).getUid().equals(userManager.getCurrentUid()))
+            {
+                participants.remove(i);
+                break;
+            }
+        }
 
     }
 

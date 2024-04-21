@@ -14,6 +14,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.chathub.Data_Containers.*;
 import com.example.chathub.R;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -53,23 +55,15 @@ public class ChatAdapter extends ArrayAdapter<Chat>
         {
             // Get a reference to the storage object
             StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-
+        
             StorageReference islandRef = storageReference.child(chat.getChatImagePath());
-
-            final long MAX_DOWNLOAD = 1024 * 1024 * 20;
-            islandRef.getBytes(MAX_DOWNLOAD).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                @Override
-                public void onSuccess(byte[] bytes) {
-                    // bytes to bitmap and then load to image
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    image.setImageBitmap(bitmap);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle any errors
-                }
-            });
+        
+            // Use Glide to load the image
+            Glide.with(context)
+                .load(islandRef)
+                .placeholder(R.drawable.loading_image) // Placeholder image
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(image);
         }
 
         return view;
