@@ -61,7 +61,7 @@ public class ChatAdapter extends ArrayAdapter<Chat>
             // Use Glide to load the image
             Glide.with(context)
                 .load(islandRef)
-                .placeholder(R.drawable.loading_image) // Placeholder image
+                .placeholder(R.drawable.loading) // Placeholder image
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(image);
         }

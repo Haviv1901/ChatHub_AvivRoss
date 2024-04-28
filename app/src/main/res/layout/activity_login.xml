@@ -87,7 +87,7 @@
         android:layout_height="40dp"
         android:text="Don't have a user? Sign up now!"
         android:gravity="center"
-        android:background="@drawable/buttonlogin"
+        android:background="@drawable/basic_button"
         android:textColor="@color/blue"
         android:textSize="15sp"
         android:layout_margin="40dp"

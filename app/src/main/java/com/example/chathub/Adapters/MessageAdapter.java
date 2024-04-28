@@ -69,7 +69,7 @@ public class MessageAdapter extends ArrayAdapter<Message>
             
             Glide.with(context)
                 .load(islandRef)
-                .placeholder(R.drawable.loading_image) // Placeholder image
+                .placeholder(R.drawable.loading) // Placeholder image
                 .diskCacheStrategy(DiskCacheStrategy.ALL) // Enable caching
                 .into(image);
         }

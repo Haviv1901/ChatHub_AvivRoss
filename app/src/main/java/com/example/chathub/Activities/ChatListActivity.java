@@ -3,15 +3,12 @@ package com.example.chathub.Activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.chathub.Adapters.ChatAdapter;
-import com.example.chathub.Adapters.MessageAdapter;
 import com.example.chathub.Data_Containers.Chat;
-import com.example.chathub.Data_Containers.Message;
 import com.example.chathub.Managers.ChatManager;
 import com.example.chathub.Managers.UserManager;
 import com.example.chathub.R;
@@ -23,12 +20,16 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
+
 public class ChatListActivity extends MainActivity implements View.OnClickListener {
 
     // views
     private ListView chatsListView;
-    private ImageView ibLogout, ibCreateNewChat;
-    private UserManager userManager;
+    private ImageView ibLogout, ibCreateNewChat, ivProfilePic;
+
 
     // else
 
@@ -37,6 +38,7 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
 
     // managers
     private ChatManager chatManager;
+    private UserManager userManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -52,11 +54,13 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
         chatsListView = findViewById(R.id.chatList);
         ibLogout = findViewById(R.id.ibLogout);
         ibCreateNewChat = findViewById(R.id.ibCreateNewChat);
+        ivProfilePic = findViewById(R.id.ivProfilePic);
 
         // onclicks
 
         ibLogout.setOnClickListener(this);
         ibCreateNewChat.setOnClickListener(this);
+        ivProfilePic.setOnClickListener(this);
 
         getMessagesFromFirebase();
 
@@ -64,6 +68,7 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
             Chat chat = chats.get(position);
             openChatActivity(chat);
         });
+
 
     }
 
@@ -75,7 +80,7 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
         {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                updateMessagesList(chatManager.retrieveChatsLoggedUserParticipate(dataSnapshot));
+                updateMessagesList(chatManager.retrieveChatsLoggedUserParticipateFromSnapshot(dataSnapshot));
             }
 
             @Override
@@ -134,6 +139,18 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
             // open add chat activity
             openAddChatActivity();
         }
+        else if(v == ivProfilePic)
+        {
+            // open profile activity
+            openProfileActivity();
+        }
+    }
+
+    private void openProfileActivity()
+    {
+        Intent intent = new Intent(ChatListActivity.this, ProfileActivity.class);
+        startActivity(intent);
+
 
     }
 

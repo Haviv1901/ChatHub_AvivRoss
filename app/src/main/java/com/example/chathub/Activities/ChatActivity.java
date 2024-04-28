@@ -18,10 +18,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.chathub.Data_Containers.Chat;
 import com.example.chathub.Data_Containers.Message;
 import com.example.chathub.Adapters.MessageAdapter;
 import com.example.chathub.Managers.ChatManager;
 import com.example.chathub.Managers.UserManager;
+import com.example.chathub.Notifications;
 import com.example.chathub.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -53,6 +55,7 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
     private ChatManager chatManager;
     private UserManager userManager;
 
+    // consts
     private final String TAG = "ChatActivity";
 
 
@@ -126,12 +129,24 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         chatManager.getChatsHandler().child(chatManager.getChatName()).child("Messages").addValueEventListener(new ValueEventListener()
         {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                updateMessagesList(chatManager.retrieveMessages(dataSnapshot));
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                updateMessagesList(chatManager.retrieveMessagesFromSnapshot(dataSnapshot));
+             //   sendNotification(chatManager.retrieveLastMessageFromSnapshot(dataSnapshot));
+            }
+
+            private void sendNotification(Message message)
+            {
+                // Create a new instance of Notifications
+                Notifications notifications = new Notifications(ChatActivity.this);
+
+                // Call the messageNotification method
+                // notifications.messageNotification(message, ChatActivity.this);
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(DatabaseError databaseError)
+            {
                 // Handle possible errors.
                 Toast.makeText(ChatActivity.this, "Fail to get data.", Toast.LENGTH_SHORT).show();
 
@@ -139,14 +154,10 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         });
     }
 
-    private void updateMessagesList(List<Message> newMessages) {
-        Collections.sort(newMessages, new Comparator<Message>() {
-            @Override
-            public int compare(Message m1, Message m2) {
-                return Integer.compare(m1.getMsgId(), m2.getMsgId());
-            }
-        });
-    
+    private void updateMessagesList(List<Message> newMessages)
+    {
+        ChatManager.sortMessageListById(newMessages);
+
         messages = newMessages;
         messageAdapter = new MessageAdapter(ChatActivity.this, R.layout.message, messages);
         messegesListView.setAdapter(messageAdapter);
@@ -157,7 +168,6 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
     @Override
     public void onClick(View v)
     {
-
             if(v == ibBack)
             {
                 //go to chat list activity

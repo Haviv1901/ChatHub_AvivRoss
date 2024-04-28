@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activities.ChatActivity"
+    android:orientation="vertical"
+    >
+
+    <!--  top bar layout.  -->
+    <RelativeLayout
+        android:id="@+id/topBarProfile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background ="@color/green"
+        >
+
+        <ImageButton
+            android:id="@+id/ibBackToChatList"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@null"
+            android:scaleType="fitXY"
+            android:src="@drawable/back_image" />
+
+        <TextView
+            android:id="@+id/tvGroupName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Profile"
+            android:textSize="40sp"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:layout_centerHorizontal="true"
+            />
+    </RelativeLayout>
+
+    <!--  profile image, right to it textview containing username  -->
+
+    <LinearLayout
+        android:id="@+id/llUsernameProfile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true"
+        >
+
+        <EditText
+            android:id="@+id/etNewUsername"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Username"
+            android:textSize="30sp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            />
+
+        <TextView
+            android:id="@+id/tvUsernameProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Username"
+            android:textSize="30sp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+
+            />
+
+        <!--  small edit icon next to the username  -->
+
+        <ImageButton
+            android:id="@+id/ibEditUsername"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
+            android:background="@null"
+            android:scaleType="fitXY"
+            android:src="@drawable/edit_icon" />
+
+    </LinearLayout>
+
+
+
+
+    <!--  save button at the middle, abit below the username  -->
+
+    <LinearLayout
+        android:id="@+id/llSaveUsername"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_below="@id/llUsernameProfile"
+        android:visibility="gone"
+        >
+
+    <TextView
+        android:id="@+id/btSaveUsername"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/basic_button"
+        android:gravity="center"
+        android:text="Save"
+        android:textColor="@color/black"
+        android:textSize="25sp" />
+
+        <ProgressBar
+            android:id="@+id/pbUsernameSignUp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center" />
+
+    </LinearLayout>
+
+
+    <!--  bottom bar layout.  -->
+    <LinearLayout
+        android:id="@+id/bottomBarProfile"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:background ="@color/green"
+        >
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>

@@ -21,6 +21,8 @@ import com.google.firebase.storage.UploadTask;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,21 +32,12 @@ public class ChatManager
     private int currentChatId;
     private String currentChatName;
     private int lastMessageId;
-    private FirebaseStorage sotrageHandler;
 
     // managers
     private UserManager userManager;
 
     // consts
     private static final String TAG = "ChatManager";
-    // paths to storage
-    private static final String CHAT_IMAGE_PATH_STORAGE  = "images";
-    private static final String CHAT_AUDIO_PATH_STORAGE = "audio";
-    private static final String CHAT_ICONS_STORAGE = "Group_Icon";
-    // paths to db
-    private static final String CHATS_PATH_DB = "Chats";
-    // global chat
-    private static final String GLOBAL_CHAT_NAME = "THIS_CHAT_IS_255.255.255.255";
 
 
     public ChatManager(Context context)
@@ -66,7 +59,6 @@ public class ChatManager
     {
         userManager = new UserManager(context);
         chatsHandler = FirebaseDatabase.getInstance().getReference("Chats");
-        sotrageHandler = FirebaseStorage.getInstance();
     }
 
     public DatabaseReference getChatsHandler()
@@ -79,35 +71,11 @@ public class ChatManager
         return currentChatName;
     }
 
-    private String getTime()
-    {
-        LocalTime now = LocalTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        return now.format(formatter);
-    }
 
-    public String uploadFile(String imageBasePath, Bitmap image)
-    {
-        // create a byte array of the image
-        byte[] byteArray = Utilities.convertBitmapToByteArray(image);
-
-        return uploadFile(imageBasePath, byteArray);
-    }
-
-    public String uploadFile(String imageBasePath, byte[] byteArray)
-    {
-
-        String imagePath = imageBasePath + "/" + UUID.randomUUID().toString() + ".png";
-
-        // upload the image to the storage
-        UploadTask uploadTask = sotrageHandler.getReference(imagePath).putBytes(byteArray);
-
-        return imagePath;
-    }
 
 
     public void sendMessage(String context, Bitmap image, String username) {
-        String imagePath = uploadFile(CHAT_IMAGE_PATH_STORAGE, image);
+        String imagePath = Utilities.uploadFile(Utilities.CHAT_IMAGE_PATH_STORAGE, image);
         sendMessage(context, imagePath, username);
     }
     public void sendMessage(String context, String username)
@@ -117,7 +85,7 @@ public class ChatManager
     public void sendMessage(String context, String imagePath, String username)
     {
         // create a new message object
-        String time =  getTime();
+        String time =  Utilities.getTime();
         Message newMessage = new Message(username, context, imagePath, time, lastMessageId);
         sendMessage(newMessage);
 
@@ -165,7 +133,7 @@ public class ChatManager
     }
 
 
-    public List<Message> retrieveMessages(DataSnapshot dataSnapshot)
+    public List<Message> retrieveMessagesFromSnapshot(DataSnapshot dataSnapshot)
     {
         List<Message> newMessages = new ArrayList<>();
         for (DataSnapshot messageSnapshot : dataSnapshot.getChildren())
@@ -177,30 +145,36 @@ public class ChatManager
         return newMessages;
     }
 
-    public List<Chat> retrieveChatsLoggedUserParticipate(DataSnapshot dataSnapshot)
+    public Message retrieveLastMessageFromSnapshot(DataSnapshot dataSnapshot)
     {
-        List<Chat> newChats = retrieveChats(dataSnapshot);
+        List<Message> newMessages = retrieveMessagesFromSnapshot(dataSnapshot);
+        sortMessageListById(newMessages);
+        return newMessages.get(newMessages.size() - 1);
+    }
 
+    public List<Chat> retrieveChatsLoggedUserParticipateFromSnapshot(DataSnapshot dataSnapshot)
+    {
+        List<Chat> newChats = retrieveChatsFromSnapshot(dataSnapshot);
+        List<Chat> chatsUserParticipateIn = new ArrayList<>();
         for (int i = 0; i < newChats.size(); i++)
         {
             Chat chat = newChats.get(i);
             // if a chat contains the top secrect global chat code, then it will show for everyone.
-            if(chat.getMembers().contains(GLOBAL_CHAT_NAME))
+            if(chat.getMembers().contains(Utilities.GLOBAL_CHAT_NAME))
             {
-                continue;
+                chatsUserParticipateIn.add(chat);
             }
-            // if the chat doesnt contain the current user, remove it from the list
-            if (!chat.getMembers().contains(userManager.getCurrentUid()))
+            // if the chat contain the current user, remove it from the list
+            if (chat.getMembers().contains(userManager.getCurrentUid()))
             {
-                newChats.remove(i);
-                i--;
+                chatsUserParticipateIn.add(chat);
             }
         }
 
-        return newChats;
+        return chatsUserParticipateIn;
     }
 
-    public List<Chat> retrieveChats(DataSnapshot dataSnapshot)
+    public List<Chat> retrieveChatsFromSnapshot(DataSnapshot dataSnapshot)
     {
         List<Chat> newChats = new ArrayList<>();
         for (DataSnapshot chatSnapshot : dataSnapshot.getChildren())
@@ -214,7 +188,7 @@ public class ChatManager
 
     public void createChat(String chatName, List<Participant> members, byte[] image)
     {
-        String imagePath = uploadFile(CHAT_ICONS_STORAGE, image);
+        String imagePath = Utilities.uploadFile(Utilities.CHAT_ICONS_STORAGE, image);
 
         // set next message id to 0
         // chat id to 0 temporarily
@@ -252,6 +226,15 @@ public class ChatManager
         });
     }
 
+
+    public static void sortMessageListById(List<Message> newMessages) {
+        Collections.sort(newMessages, new Comparator<Message>() {
+            @Override
+            public int compare(Message m1, Message m2) {
+                return Integer.compare(m1.getMsgId(), m2.getMsgId());
+            }
+        });
+    }
 
 
 }

@@ -40,7 +40,7 @@
             android:layout_height="match_parent"
             android:hint="    Search"
             android:inputType="text"
-            android:background="@drawable/buttonlogin"
+            android:background="@drawable/basic_button"
             />
 
 
