@@ -10,6 +10,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
@@ -36,6 +39,10 @@ public class Utilities
     public static final String UTILITIES_PATH_DB = "Utilities";
     // global chat
     public static final String GLOBAL_CHAT_NAME = "THIS_CHAT_IS_255.255.255.255";
+    // file extenstions
+    public static final String PNG_EXTENSION = ".png";
+    public static final String THREE_GPP_EXTENSION = ".3gpp";
+
 
 
 
@@ -103,18 +110,18 @@ public class Utilities
         return now.format(formatter);
     }
 
-    public static String uploadFile(String imageBasePath, Bitmap image)
+    public static String uploadFile(String imageBasePath, Bitmap image, String extenstion)
     {
         // create a byte array of the image
         byte[] byteArray = Utilities.convertBitmapToByteArray(image);
 
-        return uploadFile(imageBasePath, byteArray);
+        return uploadFile(imageBasePath, byteArray, extenstion);
     }
 
-    public static String uploadFile(String imageBasePath, byte[] byteArray)
+    public static String uploadFile(String imageBasePath, byte[] byteArray, String extenstion)
     {
 
-        String imagePath = imageBasePath + "/" + UUID.randomUUID().toString() + ".png";
+        String imagePath = imageBasePath + "/" + UUID.randomUUID().toString() + extenstion;
 
         FirebaseStorage sotrageHandler = FirebaseStorage.getInstance();
 
@@ -124,6 +131,29 @@ public class Utilities
         return imagePath;
     }
 
-
+    public static byte[] readFileToByteArray(String filePath) throws IOException
+    {
+        File file = new File(filePath);
+        byte[] bytes = new byte[(int) file.length()];
+        FileInputStream fis = null;
+        try
+        {
+            fis = new FileInputStream(file);
+            int offset = 0;
+            int numRead;
+            while (offset < bytes.length && (numRead = fis.read(bytes, offset, bytes.length - offset)) >= 0)
+            {
+                offset += numRead;
+            }
+        }
+        finally
+        {
+            if (fis != null)
+            {
+                fis.close();
+            }
+        }
+        return bytes;
+    }
 
 }

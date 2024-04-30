@@ -174,7 +174,7 @@ public class UserManager {
         return uid;
     }
 
-    private Boolean isUserLoggedIn()
+    public Boolean isUserLoggedIn()
     {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null)

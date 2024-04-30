@@ -1,37 +1,45 @@
 package com.example.chathub.Activities;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.chathub.Data_Containers.Chat;
 import com.example.chathub.Data_Containers.Message;
 import com.example.chathub.Adapters.MessageAdapter;
+import com.example.chathub.Data_Containers.VoiceMessageData;
 import com.example.chathub.Managers.ChatManager;
 import com.example.chathub.Managers.UserManager;
 import com.example.chathub.Notifications;
 import com.example.chathub.R;
+import com.example.chathub.Utilities;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 
@@ -45,18 +53,27 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
     private LinearLayout imageBar;
     private TextView tvGroupName;
 
-    // else
+    // chat related
     private MessageAdapter messageAdapter;
     private List<Message> messages;
     private Boolean isImage;
     private Bitmap image;
+    private Boolean isRecording;
 
     // managers
     private ChatManager chatManager;
-    private UserManager userManager;
 
     // consts
     private final String TAG = "ChatActivity";
+    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
+
+    // voice recording
+    private static String recordingFilePath = null;
+    private MediaRecorder recorder = null;
+    private MediaPlayer player = null;
+    // Requesting permission to RECORD_AUDIO
+    private boolean permissionToRecordAccepted = false;
+    private String [] permissions = {Manifest.permission.RECORD_AUDIO};
 
 
     @Override
@@ -64,6 +81,11 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
+        recordingFilePath = getExternalCacheDir().getAbsolutePath();
+        recordingFilePath += "/recordedFileTEMP.3gp";
+
+        ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
 
         // managers
         Intent intent = getIntent();
@@ -73,7 +95,6 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         checkForValidChat(chatName, chatId);
 
         chatManager = new ChatManager(chatName, chatId, this);
-        userManager = new UserManager(this);
 
 
         // views
@@ -97,7 +118,6 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         ibSendButton.setOnClickListener(this);
         ivXIcon.setOnClickListener(this);
 
-
         // set group name
         tvGroupName.setText(chatName);
 
@@ -107,6 +127,77 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         // set image bar to invisible
         hideImageBar();
 
+        isRecording = false;
+
+
+    }
+
+    private void playButtonPressed(Button playButton)
+    {
+        // retrieve data from button and check for errors
+        VoiceMessageData audioMessageData = (VoiceMessageData) playButton.getTag();
+        if(audioMessageData == null)
+        {
+            Log.e(TAG, "Error: audio path is empty");
+            return;
+        }
+        ProgressBar progressBar = audioMessageData.progressBar;
+        String audioFilePath = audioMessageData.audioFilePath;
+        if(audioFilePath == null || audioFilePath.isEmpty() || progressBar == null)
+        {
+            Log.e(TAG, "Error getting voice message data from button tag");
+            return;
+        }
+
+        // set loading
+        progressBar.setVisibility(View.VISIBLE);
+
+        // download file from firebase storage.
+        chatManager.downloadAudioFromStorage(audioFilePath, this::playFile, progressBar);
+    }
+
+    private void playFile(File file) {
+        player = new MediaPlayer();
+        try {
+            player.setDataSource(file.getAbsolutePath());
+            player.prepare();
+            player.start();
+        } catch (IOException e) {
+            Log.e(TAG, "prepare() failed");
+        }
+    }
+
+    private void stopPlaying() {
+        player.release();
+        player = null;
+    }
+
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+        if (recorder != null)
+        {
+            recorder.release();
+            recorder = null;
+        }
+
+        if (player != null)
+        {
+            player.release();
+            player = null;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode){
+            case REQUEST_RECORD_AUDIO_PERMISSION:
+                permissionToRecordAccepted  = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                break;
+        }
+        if (!permissionToRecordAccepted ) finish();
 
     }
 
@@ -159,7 +250,7 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         ChatManager.sortMessageListById(newMessages);
 
         messages = newMessages;
-        messageAdapter = new MessageAdapter(ChatActivity.this, R.layout.message, messages);
+        messageAdapter = new MessageAdapter(ChatActivity.this, R.layout.text_message, messages, this::playButtonPressed);
         messegesListView.setAdapter(messageAdapter);
         messegesListView.setSelection(messages.size() - 1);
     }
@@ -179,7 +270,7 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
             }
             else if(v == ibMicrophoneButton)
             {
-                //open microphone
+                microphoneOnClick();
             }
             else if(v == ibSendButton)
             {
@@ -199,6 +290,93 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
 
     }
 
+    private void microphoneOnClick()
+    {
+        if(isRecording)
+        {
+            ibMicrophoneButton.setImageResource(R.drawable.microphone);
+            stopRecording();
+        }
+        else
+        {
+            startRecording();
+            ibMicrophoneButton.setImageResource(R.drawable.microphone_green);
+        }
+
+
+
+    }
+
+    private void stopRecording()
+    {
+        recorder.stop();
+        recorder.release();
+        recorder = null;
+
+        // extract file to byte arr
+        byte[] audioByteArr = getByteArrayFromFile();
+        if (audioByteArr == null) return;
+
+        String audioLength = getAudioDuration(recordingFilePath);
+
+        // upload file to firebase
+        chatManager.uploadAudio(audioByteArr, audioLength);
+        isRecording = false;
+
+    }
+
+    private String getAudioDuration(String recordingFilePath)
+    {
+        // get the duration of the recording
+        MediaPlayer mediaPlayer = new MediaPlayer();
+        int duration = 0;
+        try {
+            mediaPlayer.setDataSource(recordingFilePath);
+            mediaPlayer.prepare();
+            duration = mediaPlayer.getDuration(); // duration in milliseconds
+            mediaPlayer.release();
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to get the duration of the audio file", e);
+        }
+
+        // conver duration to MM:SS format
+        int minutes = (duration / 1000) / 60;
+        int seconds = (duration / 1000) % 60;
+        return minutes + ":" + seconds;
+    }
+
+    @Nullable
+    private byte[] getByteArrayFromFile() {
+        byte[] audioByteArr;
+        try
+        {
+            audioByteArr = Utilities.readFileToByteArray(recordingFilePath);
+        }
+        catch (IOException e)
+        {
+            Log.e(TAG, "Failed to read audio file", e);
+            return null;
+        }
+        return audioByteArr;
+    }
+
+
+    private void startRecording() {
+        recorder = new MediaRecorder();
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC); // Use the device microphone as the audio source
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP); // Use the 3GPP media file format
+        recorder.setOutputFile(recordingFilePath); // Set the output file path
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB); // Use the AMR narrowband audio encoder
+
+        try {
+            recorder.prepare(); // Prepare the recorder
+        } catch (IOException e) {
+            Log.e(TAG, "prepare() failed");
+        }
+
+        recorder.start(); // Start recording
+        isRecording = true;
+    }
     private void hideImageBar()
     {
         ivImage.setVisibility(View.GONE);
@@ -270,11 +448,11 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         // send message to data base
         if(isImage)
         {
-            chatManager.sendMessage(message, image, userManager.getCurrentUsername());
+            chatManager.sendTextMessage(message, image);
         }
         else
         {
-            chatManager.sendMessage(message, userManager.getCurrentUsername());
+            chatManager.sendTextMessage(message);
         }
 
 

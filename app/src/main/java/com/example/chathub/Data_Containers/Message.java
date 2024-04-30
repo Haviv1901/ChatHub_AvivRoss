@@ -5,8 +5,6 @@ import androidx.annotation.NonNull;
 
 public class Message {
     private String sender;
-    private String content;
-    private String image;
     private String date;
     private int msgId;
 
@@ -14,20 +12,9 @@ public class Message {
     {
         // Default constructor required for Firebase
     }
-
-    public Message(String sender, String content, String image, String date)
+    public Message(String sender, String date, int msgId)
     {
         this.sender = sender;
-        this.content = content;
-        this.image = image;
-        this.date = date;
-        msgId = -1;
-    }
-    public Message(String sender, String content, String image, String date, int msgId)
-    {
-        this.sender = sender;
-        this.content = content;
-        this.image = image;
         this.date = date;
         this.msgId = msgId;
     }
@@ -50,21 +37,7 @@ public class Message {
         this.sender = sender;
     }
 
-    public String getContent() {
-        return content;
-    }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
 
     public String getDate() {
         return date;
@@ -78,7 +51,6 @@ public class Message {
     @Override
     public String toString()
     {
-        return "Sender: " + sender + ", Content: " + content + ", Image: " + image + ", Date: " + date + ", MsgId: " + msgId;
-
+        return "Sender: " + sender + ", Date: " + date + ", MsgId: " + msgId;
     }
 }

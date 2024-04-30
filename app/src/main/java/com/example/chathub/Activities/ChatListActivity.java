@@ -2,6 +2,7 @@ package com.example.chathub.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -20,10 +21,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.View;
-
 public class ChatListActivity extends MainActivity implements View.OnClickListener {
 
     // views
@@ -32,7 +29,7 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
 
 
     // else
-
+    private final String TAG = "ChatListActivity";
     private List<Chat> chats;
     private ChatAdapter chatAdapter;
 
@@ -62,7 +59,7 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
         ibCreateNewChat.setOnClickListener(this);
         ivProfilePic.setOnClickListener(this);
 
-        getMessagesFromFirebase();
+        getChatsFromFirebase();
 
         chatsListView.setOnItemClickListener((parent, view, position, id) -> {
             Chat chat = chats.get(position);
@@ -74,7 +71,7 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
 
 
     /// this method will set up a listener for the messages in the chat
-    private void getMessagesFromFirebase()
+    private void getChatsFromFirebase()
     {
         chatManager.getChatsHandler().addValueEventListener(new ValueEventListener()
         {
@@ -86,6 +83,7 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // Handle possible errors.
+                Log.e(TAG, "Failed to read value.", databaseError.toException());
                 Toast.makeText(ChatListActivity.this, "Fail to get data.", Toast.LENGTH_SHORT).show();
 
             }

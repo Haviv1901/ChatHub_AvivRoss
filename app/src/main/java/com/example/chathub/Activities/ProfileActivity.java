@@ -95,7 +95,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     private void saveUsernameOnClick()
     {
-        pbUsernameSignUp.setVisibility(View.VISIBLE);
+
         String newUsername = etNewUsername.getText().toString();
 
         if(newUsername.equals(username))
@@ -117,6 +117,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             return;
         }
 
+        pbUsernameSignUp.setVisibility(View.VISIBLE);
         userManager.isUsernameExists(newUsername, this::changeUIOnUsernameExists);
 
 

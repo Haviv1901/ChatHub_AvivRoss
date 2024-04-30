@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.example.chathub.Managers.UserManager;
 
+import com.example.chathub.Notifications;
 import com.example.chathub.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -40,6 +41,10 @@ public class LoginActivity extends MainActivity implements View.OnClickListener
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        // init notifications
+        Notifications notifications = new Notifications(this);
+        notifications.setupChannel(this);
 
         // init manager
         userManager = new UserManager(this);

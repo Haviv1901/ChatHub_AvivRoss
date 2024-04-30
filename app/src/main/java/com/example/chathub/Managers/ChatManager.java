@@ -5,26 +5,35 @@ import static com.example.chathub.Data_Containers.Participant.membersToString;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
+import android.widget.ProgressBar;
+
+import androidx.annotation.NonNull;
 
 import com.example.chathub.Data_Containers.Chat;
 import com.example.chathub.Data_Containers.Message;
 import com.example.chathub.Data_Containers.Participant;
+import com.example.chathub.Data_Containers.TextMessage;
+import com.example.chathub.Data_Containers.VoiceMessage;
+import com.example.chathub.Data_Containers.VoiceMessageData;
 import com.example.chathub.Utilities;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.UploadTask;
+import com.google.firebase.storage.StorageReference;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
+import java.util.function.Consumer;
 
 public class ChatManager
 {
@@ -32,6 +41,7 @@ public class ChatManager
     private int currentChatId;
     private String currentChatName;
     private int lastMessageId;
+    private Context context;
 
     // managers
     private UserManager userManager;
@@ -57,6 +67,7 @@ public class ChatManager
 
     private void initHandlersAndManagers(Context context)
     {
+        this.context = context;
         userManager = new UserManager(context);
         chatsHandler = FirebaseDatabase.getInstance().getReference("Chats");
     }
@@ -74,24 +85,32 @@ public class ChatManager
 
 
 
-    public void sendMessage(String context, Bitmap image, String username) {
-        String imagePath = Utilities.uploadFile(Utilities.CHAT_IMAGE_PATH_STORAGE, image);
-        sendMessage(context, imagePath, username);
+    public void sendTextMessage(String messageText, Bitmap image) {
+        String imagePath = Utilities.uploadFile(Utilities.CHAT_IMAGE_PATH_STORAGE, image, Utilities.PNG_EXTENSION);
+        sendTextMessage(messageText, imagePath);
     }
-    public void sendMessage(String context, String username)
+    public void sendTextMessage(String messageText)
     {
-        sendMessage(context, "", username);
+        sendTextMessage(messageText, "");
     }
-    public void sendMessage(String context, String imagePath, String username)
+    public void sendTextMessage(String messageText, String imagePath)
     {
         // create a new message object
-        String time =  Utilities.getTime();
-        Message newMessage = new Message(username, context, imagePath, time, lastMessageId);
+        TextMessage newMessage = new TextMessage(
+                userManager.getCurrentUsername(), messageText, imagePath, Utilities.getTime(), lastMessageId);
         sendMessage(newMessage);
 
         // update LastMessageId in database
         addToLastMessageId();
     }
+
+    private void sendVoiceMessage(String audioPath, String audioLength)
+    {
+        VoiceMessage newMessage = new VoiceMessage(
+                userManager.getCurrentUsername(), audioPath, Utilities.getTime(), lastMessageId, audioLength);
+        sendMessage(newMessage);
+    }
+
     // sends a message object to the db
     public void sendMessage(Message message)
     {
@@ -133,16 +152,25 @@ public class ChatManager
     }
 
 
-    public List<Message> retrieveMessagesFromSnapshot(DataSnapshot dataSnapshot)
+    public List<Message> retrieveMessagesFromSnapshot(DataSnapshot snapshot)
     {
-        List<Message> newMessages = new ArrayList<>();
-        for (DataSnapshot messageSnapshot : dataSnapshot.getChildren())
+        List<Message> messages = new ArrayList<>();
+        for (DataSnapshot postSnapshot: snapshot.getChildren())
         {
-            Message message = messageSnapshot.getValue(Message.class);
-            newMessages.add(message);
+            // Check if it's a text message
+            if (postSnapshot.hasChild("content"))
+            {
+                TextMessage textMessage = postSnapshot.getValue(TextMessage.class);
+                messages.add(textMessage);
+            }
+            // Check if it's a voice message
+            else if (postSnapshot.hasChild("voice"))
+            {
+                VoiceMessage voiceMessage = postSnapshot.getValue(VoiceMessage.class);
+                messages.add(voiceMessage);
+            }
         }
-
-        return newMessages;
+        return messages;
     }
 
     public Message retrieveLastMessageFromSnapshot(DataSnapshot dataSnapshot)
@@ -188,7 +216,7 @@ public class ChatManager
 
     public void createChat(String chatName, List<Participant> members, byte[] image)
     {
-        String imagePath = Utilities.uploadFile(Utilities.CHAT_ICONS_STORAGE, image);
+        String imagePath = Utilities.uploadFile(Utilities.CHAT_ICONS_STORAGE, image, Utilities.PNG_EXTENSION);
 
         // set next message id to 0
         // chat id to 0 temporarily
@@ -237,5 +265,54 @@ public class ChatManager
     }
 
 
+    /*
+    * function will extract the file from the path and upload it to the storage
+    * */
+    public void uploadAudio(byte[] audioByteArr, String audioLength)
+    {
+
+        String audioPath = Utilities.uploadFile(Utilities.CHAT_AUDIO_PATH_STORAGE, audioByteArr, Utilities.THREE_GPP_EXTENSION);
+
+        sendVoiceMessage(audioPath, audioLength);
+    }
+
+
+    public void downloadAudioFromStorage(String audioPath, Consumer<File> playAudio, ProgressBar pbLoading)
+    {
+        // Create a reference to the file to download
+        StorageReference audioRef = FirebaseStorage.getInstance().getReference().child(audioPath);
+    
+        // Create a local file to store the downloaded file
+        File localFile = null;
+        try
+        {
+            localFile = File.createTempFile("audioFile", "3gp", context.getCacheDir());
+        }
+        catch (IOException e)
+        {
+            Log.e(TAG, "Failed to create local file", e);
+        }
+    
+        if (localFile != null)
+        {
+            File finalLocalFile = localFile;
+            audioRef.getFile(localFile)
+                .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>()
+                {
+                    @Override
+                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                        // Local file has been created and downloaded, ready for use
+                        playAudio.accept(finalLocalFile);
+                        pbLoading.setVisibility(ProgressBar.GONE);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        Log.e(TAG, "Failed to download file", exception);
+                        pbLoading.setVisibility(ProgressBar.GONE);
+                    }
+                });
+        }
+    }
 }
 
