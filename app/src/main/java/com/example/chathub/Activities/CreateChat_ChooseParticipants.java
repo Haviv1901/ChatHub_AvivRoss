@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -76,11 +78,24 @@ public class CreateChat_ChooseParticipants extends AppCompatActivity implements 
         // onclicks
         btCreateChat.setOnClickListener(this);
         btBackToChooseNameAndPic.setOnClickListener(this);
-        etSearchParticipants.setOnKeyListener(new View.OnKeyListener() {
+        etSearchParticipants.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                Utilities.debugToast(CreateChat_ChooseParticipants.this, "search");
-                return false;
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // This method is called to notify you that, within s, the count characters
+                // beginning at start are about to be replaced by new text with length after.
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // This method is called to notify you that, within s, the count characters
+                // beginning at start have just replaced old text that had length before.
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // This method is called to notify you that, somewhere within s, the text has
+                // been changed.
+                loadParticipantsList(etSearchParticipants.getText().toString());
             }
         });
 
@@ -91,7 +106,7 @@ public class CreateChat_ChooseParticipants extends AppCompatActivity implements 
         setTitleToChatName();
 
         // load list view
-        loadParticipantsList();
+        loadParticipantsList("");
 
 
 
@@ -99,10 +114,10 @@ public class CreateChat_ChooseParticipants extends AppCompatActivity implements 
 
     private void setTitleToChatName()
     {
-        Intent intent = getIntent();
-        String chatName = intent.getStringExtra("chatName");
-        tvChatNameChoosePart.setText(chatName);
-        imageBytes = Utilities.getAndFlushTransactionHelper();
+//        Intent intent = getIntent();
+//        String chatName = intent.getStringExtra("chatName");
+//        tvChatNameChoosePart.setText(chatName);
+//        imageBytes = Utilities.getAndFlushTransactionHelper();
     }
 
     private void setParticipantAdapter()
@@ -126,18 +141,23 @@ public class CreateChat_ChooseParticipants extends AppCompatActivity implements 
 
     }
 
-    private void loadParticipantsList()
+    private void loadParticipantsList(String search)
     {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
+                participants.clear(); // Clear the participants list
+
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String uid = snapshot.getKey();
                     String username = snapshot.child("username").getValue(String.class);
 
-                    participants.add(new Participant(username, uid));
+                    if(username.toLowerCase().contains(search.toLowerCase()))
+                    {
+                        participants.add(new Participant(username, uid));
+                    }
                 }
                 // Do something with the map of users
                 setParticipantAdapter();
