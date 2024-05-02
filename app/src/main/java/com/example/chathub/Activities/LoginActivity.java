@@ -1,21 +1,25 @@
 package com.example.chathub.Activities;
 
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.content.Intent;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.example.chathub.Managers.UserManager;
-
-import com.example.chathub.Notifications;
 import com.example.chathub.R;
+import com.example.chathub.Utilities;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.hbb20.CountryCodePicker;
@@ -35,6 +39,7 @@ public class LoginActivity extends MainActivity implements View.OnClickListener
     // firebase
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
+    private static final int REQUEST_PERMISSIONS = 1 ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -42,9 +47,8 @@ public class LoginActivity extends MainActivity implements View.OnClickListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // init notifications
-        Notifications notifications = new Notifications(this);
-        notifications.setupChannel(this);
+        // ask for permissions
+        ActivityCompat.requestPermissions(this, Utilities.PERMISSIONS, REQUEST_PERMISSIONS);
 
         // init manager
         userManager = new UserManager(this);
@@ -78,6 +82,20 @@ public class LoginActivity extends MainActivity implements View.OnClickListener
 
         loginPage_countrycode.registerCarrierNumberEditText(etPhoneNumberLogin);
 
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        boolean permissionToRecordAccepted = false;
+        switch (requestCode)
+        {
+            case REQUEST_PERMISSIONS:
+                permissionToRecordAccepted  = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                break;
+        }
+        if (!permissionToRecordAccepted ) finish();
 
     }
 

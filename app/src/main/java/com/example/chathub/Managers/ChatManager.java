@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -14,7 +15,6 @@ import com.example.chathub.Data_Containers.Message;
 import com.example.chathub.Data_Containers.Participant;
 import com.example.chathub.Data_Containers.TextMessage;
 import com.example.chathub.Data_Containers.VoiceMessage;
-import com.example.chathub.Data_Containers.VoiceMessageData;
 import com.example.chathub.Utilities;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -151,6 +151,23 @@ public class ChatManager
         });
     }
 
+    public void setupMessagesListener(Consumer<List<Message>> updateMessagesList)
+    {
+        getChatsHandler().child(getChatName()).child("Messages").addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                updateMessagesList.accept(retrieveMessagesFromSnapshot(dataSnapshot));
+                //   sendNotification(chatManager.retrieveLastMessageFromSnapshot(dataSnapshot));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError)
+            {
+            }
+        });
+    }
 
     public List<Message> retrieveMessagesFromSnapshot(DataSnapshot snapshot)
     {
@@ -177,8 +194,31 @@ public class ChatManager
     {
         List<Message> newMessages = retrieveMessagesFromSnapshot(dataSnapshot);
         sortMessageListById(newMessages);
+        if(newMessages.size() == 0)
+        {
+            return null;
+        }
         return newMessages.get(newMessages.size() - 1);
     }
+
+    public void setupChatsUserParticipateInListener(Consumer<List<Chat>> callback)
+    {
+        getChatsHandler().addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                callback.accept(retrieveChatsLoggedUserParticipateFromSnapshot(dataSnapshot));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Handle possible errors.
+                Log.e(TAG, "Failed to read chats.", databaseError.toException());
+                Toast.makeText(context, "Failed to get chats.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 
     public List<Chat> retrieveChatsLoggedUserParticipateFromSnapshot(DataSnapshot dataSnapshot)
     {

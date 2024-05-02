@@ -1,11 +1,13 @@
 package com.example.chathub;
 
+import android.Manifest;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.chathub.Activities.ChatActivity;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.UploadTask;
 
@@ -42,6 +44,12 @@ public class Utilities
     // file extenstions
     public static final String PNG_EXTENSION = ".png";
     public static final String THREE_GPP_EXTENSION = ".3gpp";
+
+    // permissions
+    public static final String[] PERMISSIONS = {
+            android.Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.POST_NOTIFICATIONS
+    };
 
 
 
@@ -155,5 +163,4 @@ public class Utilities
         }
         return bytes;
     }
-
 }

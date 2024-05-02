@@ -2,20 +2,16 @@ package com.example.chathub.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.example.chathub.Adapters.ChatAdapter;
 import com.example.chathub.Data_Containers.Chat;
 import com.example.chathub.Managers.ChatManager;
 import com.example.chathub.Managers.UserManager;
+import com.example.chathub.NotificationService;
 import com.example.chathub.R;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -42,6 +38,10 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_list);
+
+        // set up notification service
+        Intent intent = new Intent(this, NotificationService.class);
+        startService(intent);
 
         // managers
         chatManager = new ChatManager(this);
@@ -73,21 +73,7 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
     /// this method will set up a listener for the messages in the chat
     private void getChatsFromFirebase()
     {
-        chatManager.getChatsHandler().addValueEventListener(new ValueEventListener()
-        {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                updateMessagesList(chatManager.retrieveChatsLoggedUserParticipateFromSnapshot(dataSnapshot));
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Handle possible errors.
-                Log.e(TAG, "Failed to read value.", databaseError.toException());
-                Toast.makeText(ChatListActivity.this, "Fail to get data.", Toast.LENGTH_SHORT).show();
-
-            }
-        });
+        chatManager.setupChatsUserParticipateInListener(this::updateMessagesList);
     }
 
     private void updateMessagesList(List<Chat> newMessages)

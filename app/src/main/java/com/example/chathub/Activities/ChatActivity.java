@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -30,8 +29,6 @@ import com.example.chathub.Data_Containers.Message;
 import com.example.chathub.Adapters.MessageAdapter;
 import com.example.chathub.Data_Containers.VoiceMessageData;
 import com.example.chathub.Managers.ChatManager;
-import com.example.chathub.Managers.UserManager;
-import com.example.chathub.Notifications;
 import com.example.chathub.R;
 import com.example.chathub.Utilities;
 import com.google.firebase.database.DataSnapshot;
@@ -65,15 +62,14 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
 
     // consts
     private final String TAG = "ChatActivity";
-    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
 
     // voice recording
     private static String recordingFilePath = null;
     private MediaRecorder recorder = null;
     private MediaPlayer player = null;
-    // Requesting permission to RECORD_AUDIO
-    private boolean permissionToRecordAccepted = false;
-    private String [] permissions = {Manifest.permission.RECORD_AUDIO};
+
+    // for notificatiopn
+    public static String chatNameForNotifications = "";
 
 
     @Override
@@ -85,7 +81,7 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         recordingFilePath = getExternalCacheDir().getAbsolutePath();
         recordingFilePath += "/recordedFileTEMP.3gp";
 
-        ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
+
 
         // managers
         Intent intent = getIntent();
@@ -95,7 +91,7 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         checkForValidChat(chatName, chatId);
 
         chatManager = new ChatManager(chatName, chatId, this);
-
+        chatNameForNotifications = chatName;
 
         // views
 
@@ -130,6 +126,12 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         isRecording = false;
 
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        chatNameForNotifications = "";
     }
 
     private void playButtonPressed(Button playButton)
@@ -172,34 +174,7 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         player = null;
     }
 
-    @Override
-    public void onStop()
-    {
-        super.onStop();
-        if (recorder != null)
-        {
-            recorder.release();
-            recorder = null;
-        }
 
-        if (player != null)
-        {
-            player.release();
-            player = null;
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode){
-            case REQUEST_RECORD_AUDIO_PERMISSION:
-                permissionToRecordAccepted  = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                break;
-        }
-        if (!permissionToRecordAccepted ) finish();
-
-    }
 
     private void checkForValidChat(String chatName, int chatId)
     {
@@ -217,32 +192,7 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
     /// this method will set up a listener for the messages in the chat
     private void getMessagesFromFirebase()
     {
-        chatManager.getChatsHandler().child(chatManager.getChatName()).child("Messages").addValueEventListener(new ValueEventListener()
-        {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
-                updateMessagesList(chatManager.retrieveMessagesFromSnapshot(dataSnapshot));
-             //   sendNotification(chatManager.retrieveLastMessageFromSnapshot(dataSnapshot));
-            }
-
-            private void sendNotification(Message message)
-            {
-                // Create a new instance of Notifications
-                Notifications notifications = new Notifications(ChatActivity.this);
-
-                // Call the messageNotification method
-                // notifications.messageNotification(message, ChatActivity.this);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError)
-            {
-                // Handle possible errors.
-                Toast.makeText(ChatActivity.this, "Fail to get data.", Toast.LENGTH_SHORT).show();
-
-            }
-        });
+        chatManager.setupMessagesListener(this::updateMessagesList);
     }
 
     private void updateMessagesList(List<Message> newMessages)
@@ -459,6 +409,21 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         // reset the message box
         etMessage.setText("");
         hideImageBar();
+    }
+
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (recorder != null) {
+            recorder.release();
+            recorder = null;
+        }
+
+        if (player != null) {
+            player.release();
+            player = null;
+        }
     }
 
 
