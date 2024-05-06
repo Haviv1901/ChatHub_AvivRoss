@@ -142,7 +142,11 @@ public class NotificationService  extends Service
         if(message instanceof TextMessage)
         {
             TextMessage textMessage = (TextMessage) message;
-            messageData =  textMessage.getSender() + " Sent: " + textMessage.getContent();
+            // take first 10 charts of textMessage.getContent(), add ...
+            if(textMessage.getContent().length() > 10)
+                messageData = textMessage.getSender() + " Sent: " + textMessage.getContent().substring(0, 10) + "...";
+            else
+                messageData =  textMessage.getSender() + " Sent: " + textMessage.getContent();
         }
         else
         {
