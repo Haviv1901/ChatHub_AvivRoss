@@ -22,13 +22,14 @@ import java.util.UUID;
 public class Utilities
 {
 
-
+    // helps with trasnfering big data between activities
     private static byte[] transactionHelper;
-
 
     // finals
     // privates
-    private static final Boolean DEBUG = true;
+    // debug flag
+    private static final Boolean DEBUG = false;
+    // log tag
     private static final String TAG = "Utilities";
     // publics
     // paths to firebase storage files:
@@ -50,7 +51,6 @@ public class Utilities
             android.Manifest.permission.RECORD_AUDIO,
             Manifest.permission.POST_NOTIFICATIONS
     };
-
 
 
 
