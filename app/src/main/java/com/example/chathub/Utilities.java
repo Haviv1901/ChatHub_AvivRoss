@@ -52,25 +52,47 @@ public class Utilities
             Manifest.permission.POST_NOTIFICATIONS
     };
 
-
-
+    /*
+    * Function: setTransactionHelper
+    * Inputs: byte[] transactionHelper - the data to be stored
+    * Outputs: void
+    * Description: This function sets the transactionHelper to the given data.
+    * */
     public static void setTransactionHelper(byte[] transactionHelper)
     {
         Log.e(TAG, "setTransactionHelper, lengthed: " + transactionHelper.length);
         Utilities.transactionHelper = transactionHelper;
     }
 
+/*
+    * Function: getTransactionHelper
+    * Inputs: void
+    * Outputs: byte[] - the data stored in transactionHelper
+    * Description: This function returns the data stored in transactionHelper.
+ */
     public static byte[] getTransactionHelper()
     {
         Log.e(TAG, "getTransactionHelper, lengthed: " + transactionHelper.length);
         return transactionHelper;
     }
 
+    /*
+    * Function: flushTransactionHelper
+    * Inputs: void
+    * Outputs: void
+    * Description: This function flushes the transactionHelper.
+     */
     public static void flushTransactionHelper()
     {
         transactionHelper = null;
     }
 
+    /*
+    * Function: getAndFlushTransactionHelper
+    * Inputs: void
+    * Outputs: byte[] - the data stored in transactionHelper
+    * Description: This function returns the data stored in transactionHelper and flushes it.
+     */
     public static byte[] getAndFlushTransactionHelper()
     {
         byte[] temp = getTransactionHelper();
@@ -78,6 +100,12 @@ public class Utilities
         return temp;
     }
 
+    /*
+    * Function: debugToast
+    * Inputs: Context context - the context, String message - the message to display
+    * Outputs: void
+    * Description: This function displays a toast with the given message if the debug flag is set.
+    * */
     public static void debugToast(Context context, String message)
     {
         if(!DEBUG)
@@ -88,17 +116,34 @@ public class Utilities
         makeToast(context, message);
     }
 
+    /*
+    * Function: makeToast
+    * Inputs: Context context - the context, String message - the message to display
+    * Outputs: void
+    * Description: This function displays a toast with the given message.
+     */
     public static void makeToast(Context context, String message)
     {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
-    // convert bitmap to byte array, set quality to 0
+    /*
+    * Function: convertBitmapToByteArray
+    * Inputs: Bitmap bitmap - the bitmap to convert
+    * Outputs: byte[] - the byte array of the bitmap
+    * Description: This function converts the given bitmap to a byte array.
+     */
     public static byte[] convertBitmapToByteArray(Bitmap bitmap)
     {
         return convertBitmapToByteArray(bitmap, 0);
     }
 
+/*
+    * Function: convertBitmapToByteArray
+    * Inputs: Bitmap bitmap - the bitmap to convert
+    * Outputs: byte[] - the byte array of the bitmap
+    * Description: This function converts the given bitmap to a byte array.
+ */
     public static byte[] convertBitmapToByteArray(Bitmap bitmap, int quality)
     {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -106,11 +151,23 @@ public class Utilities
         return stream.toByteArray();
     }
 
+    /*
+    * Function: convertByteArrayToBitmap
+    * Inputs: byte[] byteArray - the byte array to convert
+    * Outputs: Bitmap - the bitmap of the byte array
+    * Description: This function converts the given byte array to a bitmap.
+     */
     public static Bitmap convertByteArrayToBitmap(byte[] byteArray)
     {
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
     }
 
+    /*
+    * Function: getTime
+    * Inputs: void
+    * Outputs: String - the current time in HH:mm format
+    * Description: This function returns the current time in HH:mm format.
+     */
     public static String getTime()
     {
         LocalTime now = LocalTime.now();
@@ -118,6 +175,12 @@ public class Utilities
         return now.format(formatter);
     }
 
+    /*
+    * Function: uploadFile
+    * Inputs: String imageBasePath - the base path of the image, Bitmap image - the image to upload, String extenstion - the extension of the image
+    * Outputs: String - the path of the uploaded image
+    * Description: This function uploads the given image to the given base path.
+     */
     public static String uploadFile(String imageBasePath, Bitmap image, String extenstion)
     {
         // create a byte array of the image
@@ -126,6 +189,12 @@ public class Utilities
         return uploadFile(imageBasePath, byteArray, extenstion);
     }
 
+    /*
+    * Function: uploadFile
+    *   Inputs: String imageBasePath - the base path of the image, byte[] byteArray - the byte array of the image, String extenstion - the extension of the image
+    *  Outputs: String - the path of the uploaded image
+    * Description: This function uploads the given image to the given base path.
+     */
     public static String uploadFile(String imageBasePath, byte[] byteArray, String extenstion)
     {
 
@@ -139,6 +208,12 @@ public class Utilities
         return imagePath;
     }
 
+    /*
+    * Function: readFileToByteArray
+    * Inputs: String filePath - the path of the file to read
+    * Outputs: byte[] - the byte array of the file
+    * Description: This function reads the given file and returns it as a byte array.
+     */
     public static byte[] readFileToByteArray(String filePath) throws IOException
     {
         File file = new File(filePath);

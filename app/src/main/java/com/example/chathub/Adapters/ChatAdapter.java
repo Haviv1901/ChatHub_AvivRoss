@@ -25,6 +25,9 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 
+/**
+ * Adapter for the chat list
+ */
 public class ChatAdapter extends ArrayAdapter<Chat>
 {
     private Context context;
@@ -36,6 +39,13 @@ public class ChatAdapter extends ArrayAdapter<Chat>
         this.context = context;
         this.chatsList = chatsList;
     }
+
+    /**
+     * Function: getView
+     * Inputs: position, convertView, parent
+     * Outputs: View
+     * Description: This function is called when the list view is being created. It sets the chat name and image for each chat in the list.
+     */
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent)

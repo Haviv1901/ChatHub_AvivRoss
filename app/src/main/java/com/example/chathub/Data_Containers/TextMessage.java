@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 public class TextMessage extends Message
 {
 
+    // TextMessage is a subclass of Message
     private String content;
     private String image;
 

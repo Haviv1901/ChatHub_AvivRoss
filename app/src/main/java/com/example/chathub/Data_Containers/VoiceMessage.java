@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 public class VoiceMessage extends Message
 {
 
+    // VoiceMessage is a subclass of Message
     private String filePathInStorage;
     private String audioLength;
 

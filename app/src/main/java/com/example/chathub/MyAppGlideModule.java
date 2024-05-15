@@ -15,6 +15,13 @@ import java.io.InputStream;
 public class MyAppGlideModule extends AppGlideModule
 {
 
+    /*
+    * this class is a custom glide module for firebase storage
+    *
+    * explanation: this is a helper class from glide that helps us to load images from firebase storage
+    * using glide external library.
+    *
+    * */
     @Override
     public void registerComponents(Context context, Glide glide, Registry registry)
     {

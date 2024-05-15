@@ -2,6 +2,10 @@ package com.example.chathub.Data_Containers;
 
 public class Chat
 {
+    /*
+    * this class is a data container for inputing and retrieving data
+    * from firebase realtime database for chats
+    * */
     private String Members;
     private String chatImagePath;
     private String chatName;
@@ -12,7 +16,10 @@ public class Chat
 
     public Chat()
     {
+
     }
+
+    // ctor
     public Chat(String chatName, String chatImagePath, String members, int nextMessageId, int chatId)
     {
         this.chatName = chatName;
@@ -22,6 +29,8 @@ public class Chat
         this.chatId = chatId;
     }
 
+
+    // getters setters
     public String getChatName()
     {
         return chatName;
