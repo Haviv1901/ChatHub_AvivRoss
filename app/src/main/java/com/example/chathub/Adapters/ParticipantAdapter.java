@@ -35,6 +35,13 @@ public class ParticipantAdapter extends ArrayAdapter<Participant>
         this.context = context;
         this.participantList = participantList;
     }
+
+    /**
+     * Function: getView
+     * Inputs: position, convertView, parent
+     * Outputs: View
+     * Description: This function is called when the list view is being created. It sets the participant username and checkbox for each participant in the list.
+     */
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent)

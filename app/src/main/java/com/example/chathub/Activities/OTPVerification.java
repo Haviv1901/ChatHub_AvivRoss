@@ -29,6 +29,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Activity for verifying OTP
+ */
 public class OTPVerification extends AppCompatActivity implements View.OnClickListener
 {
     // views
@@ -73,6 +76,12 @@ public class OTPVerification extends AppCompatActivity implements View.OnClickLi
 
     }
 
+    /**
+     * Function: sendOtp
+     * Input: String phoneNumber - the phone number to send the OTP to, boolean isResend - whether the OTP is being resent
+     * Output: void
+     * Description: This function sends an OTP to the given phone number. If isResend is true, the OTP is resent.
+     */
     void sendOtp(String phoneNumber,boolean isResend)
     {
         startResendTimer();
@@ -121,6 +130,12 @@ public class OTPVerification extends AppCompatActivity implements View.OnClickLi
 
     }
 
+    /**
+     * Function: setInProgress
+     * Input: boolean inProgress - whether the activity is in progress or not
+     * Output: void
+     * Description: This function sets the progress bar and button visibility based on the given boolean.
+     */
     void setInProgress(boolean inProgress)
     {
         if(inProgress)
@@ -135,6 +150,12 @@ public class OTPVerification extends AppCompatActivity implements View.OnClickLi
         }
     }
 
+    /**
+     * Function: signIn
+     * Input: PhoneAuthCredential phoneAuthCredential - the phone auth credential
+     * Output: void
+     * Description: This function signs in the user with the given phone auth credential.
+     */
     void signIn(PhoneAuthCredential phoneAuthCredential)
     {
         //login and go to next activity
@@ -166,6 +187,12 @@ public class OTPVerification extends AppCompatActivity implements View.OnClickLi
 
     }
 
+    /**
+     * Function: startResendTimer
+     * Input: None
+     * Output: void
+     * Description: This function starts the resend timer.
+     */
     void startResendTimer() {
         tvOTPResend.setEnabled(false);
         Timer timer = new Timer();
@@ -188,7 +215,13 @@ public class OTPVerification extends AppCompatActivity implements View.OnClickLi
         }, 0, 1000);
     }
 
-
+    /**
+     * Function: onClick
+     * Input: View v - the view that was clicked
+     * Output: void
+     * Description: This function is called when a view is clicked.
+     *             It checks if the view is the continue button and calls the continueOnClick function.
+     */
     @Override
     public void onClick(View v) {
         if(v == btContinueOTP)
@@ -198,6 +231,13 @@ public class OTPVerification extends AppCompatActivity implements View.OnClickLi
         }
     }
 
+    /**
+     * Function: continueOnClick
+     * Input: None
+     * Output: void
+     * Description: This function is called when the continue button is clicked.
+     *             It gets the entered OTP and verifies it.
+     */
     private void continueOnClick()
     {
         String enteredOtp  = etOTPConfirm.getText().toString();

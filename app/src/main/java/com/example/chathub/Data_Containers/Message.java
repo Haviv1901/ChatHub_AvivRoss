@@ -4,10 +4,14 @@ package com.example.chathub.Data_Containers;
 import androidx.annotation.NonNull;
 
 public class Message {
+    /*
+    * this class is a base class to the two types of messages available in chat hub.
+    * */
     private String sender;
     private String date;
     private int msgId;
 
+    // ctor
     public Message()
     {
         // Default constructor required for Firebase
@@ -19,6 +23,7 @@ public class Message {
         this.msgId = msgId;
     }
 
+    // getters setters
     public int getMsgId()
     {
         return msgId;
