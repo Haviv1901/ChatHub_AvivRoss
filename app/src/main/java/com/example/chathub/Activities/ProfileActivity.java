@@ -74,6 +74,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
+    /* Function: onClick
+     * Input: View v - the view that was clicked
+     * Output: void
+     * Description: This function is called when a view is clicked. It checks which view was clicked and calls the appropriate function.
+     */
     @Override
     public void onClick(View v)
     {
@@ -93,6 +98,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
+    /* Function: saveUsernameOnClick
+     * Input: void
+     * Output: void
+     * Description: This function is called when the save button is clicked. It checks if the new username is valid and saves it to the database.
+     */
     private void saveUsernameOnClick()
     {
 
@@ -108,6 +118,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
+    /* Function: checkUsernameValidation
+     * Input: String newUsername - the new username
+     * Output: void
+     * Description: This function checks if the new username is valid.
+     */
     private void checkUsernameValidation(String newUsername)
     {
 
@@ -123,6 +138,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
+    /* Function: changeUIOnUsernameExists
+     * Input: Boolean isExists - whether the username exists
+     * Output: void
+     * Description: This function changes the UI based on whether the username exists or not.
+     */
     private void changeUIOnUsernameExists(Boolean isExists)
     {
         pbUsernameSignUp.setVisibility(View.GONE);
@@ -140,6 +160,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
+    /* Function: editUsername
+     * Input: void
+     * Output: void
+     * Description: This function sets the edit text to the current username and turns on the edit mode.
+     */
     private void editUsername()
     {
         // set editText's text to username
@@ -147,7 +172,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         turnOnEditMode();
     }
 
-
+    /* Function: turnOffEditMode
+     * Input: void
+     * Output: void
+     * Description: This function turns off the edit mode.
+     */
     private void turnOffEditMode()
     {
         // hide save button and progres bar
@@ -158,7 +187,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         tvUsernameProfile.setVisibility(View.VISIBLE);
     }
 
-
+    /* Function: turnOnEditMode
+     * Input: void
+     * Output: void
+     * Description: This function turns on the edit mode.
+     */
     private void turnOnEditMode()
     {
         // show progress bar and save button layout

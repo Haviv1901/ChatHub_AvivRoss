@@ -57,6 +57,13 @@ public class CreateChat_ChooseParticipants extends AppCompatActivity implements 
     private List<Participant> selectedParticipants;
     private byte[] imageBytes;
 
+    /**
+     * Function: onCreate
+     * Input: Bundle savedInstanceState - A mapping from String keys to various Parcelable values.
+     * Output: void
+     * Description: This function is called when the activity is starting. It initializes the activity, sets the content view,
+     *              initializes the UserManager, participants list, selected participants list, views, and sets onClick listeners.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -112,14 +119,26 @@ public class CreateChat_ChooseParticipants extends AppCompatActivity implements 
 
     }
 
+    /**
+     * Function: setTitleToChatName
+     * Input: None
+     * Output: void
+     * Description: This function sets the title of the activity to the chat name.
+     */
     private void setTitleToChatName()
     {
-//        Intent intent = getIntent();
-//        String chatName = intent.getStringExtra("chatName");
-//        tvChatNameChoosePart.setText(chatName);
-//        imageBytes = Utilities.getAndFlushTransactionHelper();
+        Intent intent = getIntent();
+        String chatName = intent.getStringExtra("chatName");
+        tvChatNameChoosePart.setText(chatName);
+        imageBytes = Utilities.getAndFlushTransactionHelper();
     }
 
+    /**
+     * Function: setParticipantAdapter
+     * Input: None
+     * Output: void
+     * Description: This function sets the participant adapter for the list view.
+     */
     private void setParticipantAdapter()
     {
         removeUserLoggedInFromParticipantsList();
@@ -128,6 +147,12 @@ public class CreateChat_ChooseParticipants extends AppCompatActivity implements 
 
     }
 
+    /**
+     * Function: removeUserLoggedInFromParticipantsList
+     * Input: None
+     * Output: void
+     * Description: This function removes the user logged in from the participants list.
+     */
     private void removeUserLoggedInFromParticipantsList()
     {
         for (int i = 0; i < participants.size(); i++)
@@ -141,6 +166,12 @@ public class CreateChat_ChooseParticipants extends AppCompatActivity implements 
 
     }
 
+    /**
+     * Function: loadParticipantsList
+     * Input: String search - the search string
+     * Output: void
+     * Description: This function loads the participants list from Firebase. It adds the participants to the list and sets the participant adapter.
+     */
     private void loadParticipantsList(String search)
     {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
@@ -170,7 +201,12 @@ public class CreateChat_ChooseParticipants extends AppCompatActivity implements 
         });
     }
 
-
+    /**
+     * Function: onClick
+     * Input: View v - the view
+     * Output: void
+     * Description: This function is called when a view has been clicked. It checks if the view is the create chat button or the back to choose name and pic button.
+     */
     @Override
     public void onClick(View v)
     {
@@ -188,11 +224,23 @@ public class CreateChat_ChooseParticipants extends AppCompatActivity implements 
 
     }
 
+    /**
+     * Function: goBackToChooseNameAndPic
+     * Input: None
+     * Output: void
+     * Description: This function finishes the activity and goes back to the choose name and pic activity.
+     */
     private void goBackToChooseNameAndPic()
     {
         finish();
     }
 
+    /**
+     * Function: createChat
+     * Input: None
+     * Output: void
+     * Description: This function creates the chat and finishes the activity.
+     */
     private void createChat()
     {
 
@@ -207,6 +255,12 @@ public class CreateChat_ChooseParticipants extends AppCompatActivity implements 
         finish();
     }
 
+    /**
+     * Function: onItemClick
+     * Input: AdapterView<?> parent - the parent view, View view - the view, int position - the position, long id - the id
+     * Output: void
+     * Description: This function is called when an item in the list view has been clicked. It checks if the participant is already selected, if it is, it removes it from the list, if not, it adds it to the list.
+     */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {

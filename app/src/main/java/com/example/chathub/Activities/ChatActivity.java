@@ -53,25 +53,31 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
     // chat related
     private MessageAdapter messageAdapter;
     private List<Message> messages;
-    private Boolean isImage;
-    private Bitmap image;
-    private Boolean isRecording;
+    private Boolean isImage; // did the user load an image
+    private Bitmap image; // the image the user loaded
+    private Boolean isRecording; // is the user recording a voice message
 
     // managers
-    private ChatManager chatManager;
+    private ChatManager chatManager; // handles all chat realted things. Controler
 
     // consts
     private final String TAG = "ChatActivity";
 
     // voice recording
-    private static String recordingFilePath = null;
-    private MediaRecorder recorder = null;
-    private MediaPlayer player = null;
+    private static String recordingFilePath = null; // path to recorded file
+    private MediaRecorder recorder = null; // the recorder object
+    private MediaPlayer player = null; // the recording player onject
 
     // for notificatiopn
-    public static String chatNameForNotifications = "";
+    public static String chatNameForNotifications = ""; // the name of the chat for notifications
 
 
+    /**
+     * Function: onCreate
+     * Input: Bundle savedInstanceState
+     * Output: None
+     * Description: This function is called when the activity is first created. It initializes the views, sets up the chat manager, and sets up the listeners for the messages.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -128,12 +134,24 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
 
     }
 
+    /**
+     * Function: onDestroy
+     * Input: None
+     * Output: None
+     * Description: This function is called before the activity is destroyed. It's the final call that the activity receives.
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
         chatNameForNotifications = "";
     }
 
+    /**
+     * Function: playButtonPressed
+     * Input: Button playButton
+     * Output: None
+     * Description: This function is called when the play button is pressed. It retrieves data from the button and checks for errors.
+     */
     private void playButtonPressed(Button playButton)
     {
         // retrieve data from button and check for errors
@@ -158,6 +176,12 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         chatManager.downloadAudioFromStorage(audioFilePath, this::playFile, progressBar);
     }
 
+    /**
+     * Function: playFile
+     * Input: File file
+     * Output: None
+     * Description: This function is called when the file is ready to be played. It plays the file.
+     */
     private void playFile(File file) {
         player = new MediaPlayer();
         try {
@@ -169,13 +193,14 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         }
     }
 
-    private void stopPlaying() {
-        player.release();
-        player = null;
-    }
 
 
-
+    /**
+     * Function: checkForValidChat
+     * Input: String chatName, int chatId
+     * Output: None
+     * Description: This function checks if the chat is valid. If the chat id is -1, it logs an error. If the chat name is null, it logs an error and finishes the activity.
+     */
     private void checkForValidChat(String chatName, int chatId)
     {
         if(chatId == -1)
@@ -189,12 +214,23 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         }
     }
 
-    /// this method will set up a listener for the messages in the chat
+    /**
+     * Function: getMessagesFromFirebase
+     * Input: None
+     * Output: None
+     * Description: This function sets up the messages listener.
+     */
     private void getMessagesFromFirebase()
     {
         chatManager.setupMessagesListener(this::updateMessagesList);
     }
 
+    /**
+     * Function: updateMessagesList
+     * Input: List<Message> newMessages
+     * Output: None
+     * Description: This function updates the messages list.
+     */
     private void updateMessagesList(List<Message> newMessages)
     {
         ChatManager.sortMessageListById(newMessages);
@@ -206,6 +242,12 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
     }
 
 
+    /**
+     * Function: onClick
+     * Input: View v
+     * Output: None
+     * Description: This function is called when a view is clicked. It checks which view was clicked and calls the appropriate function.
+     */
     @Override
     public void onClick(View v)
     {
@@ -240,6 +282,12 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
 
     }
 
+    /**
+     * Function: microphoneOnClick
+     * Input: None
+     * Output: None
+     * Description: This function is called when the microphone button is clicked. It starts or stops recording based on the current state.
+     */
     private void microphoneOnClick()
     {
         if(isRecording)
@@ -257,6 +305,12 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
 
     }
 
+    /**
+     * Function: stopRecording
+     * Input: None
+     * Output: None
+     * Description: This function stops the recording and uploads the audio file to Firebase.
+     */
     private void stopRecording()
     {
         recorder.stop();
@@ -275,6 +329,12 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
 
     }
 
+    /**
+     * Function: getAudioDuration
+     * Input: String recordingFilePath
+     * Output: String
+     * Description: This function gets the duration of the audio file.
+     */
     private String getAudioDuration(String recordingFilePath)
     {
         // get the duration of the recording
@@ -295,6 +355,12 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         return minutes + ":" + seconds;
     }
 
+    /**
+     * Function: getByteArrayFromFile
+     * Input: None
+     * Output: byte[]
+     * Description: This function reads the audio file and returns it as a byte array.
+     */
     @Nullable
     private byte[] getByteArrayFromFile() {
         byte[] audioByteArr;
@@ -310,7 +376,12 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         return audioByteArr;
     }
 
-
+    /**
+     * Function: startRecording
+     * Input: None
+     * Output: None
+     * Description: This function starts the recording.
+     */
     private void startRecording() {
         recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC); // Use the device microphone as the audio source
@@ -327,6 +398,13 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         recorder.start(); // Start recording
         isRecording = true;
     }
+
+    /**
+     * Function: hideImageBar
+     * Input: None
+     * Output: None
+     * Description: This function hides the image bar.
+     */
     private void hideImageBar()
     {
         ivImage.setVisibility(View.GONE);
@@ -335,6 +413,12 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         isImage = false;
     }
 
+    /**
+     * Function: showImageBar
+     * Input: None
+     * Output: None
+     * Description: This function shows the image bar.
+     */
     private void showImageBar()
     {
         ivImage.setVisibility(View.VISIBLE);
@@ -343,6 +427,12 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         isImage = true;
     }
 
+    /**
+     * Function: pickFromGallery
+     * Input: None
+     * Output: None
+     * Description: This function opens the gallery and allows the user to pick an image.
+     */
     private void pickFromGallery()
     {
         //Create an Intent with action as ACTION_PICK
@@ -356,12 +446,24 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         startActivityForResult(intent,0);
     }
 
+    /**
+     * Function: onActivityResult
+     * Input: int requestCode, int resultCode, @Nullable Intent data
+     * Output: None
+     * Description: This function is called when an activity returns a result. It gets the image from the gallery and sets it in the image view.
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             Uri selectedImage = data.getData();
+            if(selectedImage == null)
+            {
+                Toast.makeText(this, "Error selecting image", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "Error: selected image is null");
+                return;
+            }
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2)
             {
                 getContentResolver().takePersistableUriPermission(selectedImage, Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -385,6 +487,12 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         }
     }
 
+    /**
+     * Function: sendMessage
+     * Input: None
+     * Output: None
+     * Description: This function sends the message to the database.
+     */
     private void sendMessage()
     {
 
@@ -411,7 +519,12 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         hideImageBar();
     }
 
-
+    /**
+     * Function: onStop
+     * Input: None
+     * Output: None
+     * Description: This function is called when the activity is stopped. It releases the recorder and player.
+     */
     @Override
     public void onStop() {
         super.onStop();
@@ -426,8 +539,12 @@ public class ChatActivity extends MainActivity implements View.OnClickListener {
         }
     }
 
-
-
+    /**
+     * Function: backOnClick
+     * Input: None
+     * Output: None
+     * Description: This function is called when the back button is clicked. It finishes the activity.
+     */
     private void backOnClick()
     {
         finish();

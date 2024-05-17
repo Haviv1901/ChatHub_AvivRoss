@@ -31,6 +31,10 @@ import java.util.List;
 public class NotificationService  extends Service
 {
 
+    /*
+    * service to handle notifications.
+    * */
+
     // managers
     private ChatManager chatManager;
     private UserManager userManager;
@@ -51,12 +55,24 @@ public class NotificationService  extends Service
         Log.e(TAG, "Notification listener started.");
     }
 
+    /**
+     * Function: getChatsFromFirebase
+     * Input: None
+     * Output: None
+     * Description: This function will get all the chats the user is participating in from firebase
+     */
     private void getChatsFromFirebase()
     {
         chatManager.setupChatsUserParticipateInListener(this::setupChatListeners);
 
     }
 
+    /**
+     * Function: setupChatListeners
+     * Input: List<Chat> chats - the chats the user is participating in
+     * Output: None
+     * Description: This function will set up listeners for the chats the user is participating in
+     */
     private void setupChatListeners(List<Chat> chats)
     {
 
@@ -67,6 +83,12 @@ public class NotificationService  extends Service
 
     }
 
+    /**
+     * Function: onStartCommand
+     * Input: Intent intent - the intent that started the service, int flags - flags for the service, int startId - the id of the service
+     * Output: int - the return value for the service
+     * Description: This function is called when the service is started. It sets up the service to be restarted if it gets terminated.
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // The service is starting, due to a call to startService()
@@ -74,6 +96,12 @@ public class NotificationService  extends Service
         return START_STICKY; // Service will be restarted if it gets terminated
     }
 
+    /**
+     * Function: onDestroy
+     * Input: None
+     * Output: None
+     * Description: This function is called when the service is destroyed. It is used to clean up any resources used by the service.
+     */
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -81,6 +109,12 @@ public class NotificationService  extends Service
         // Here you can cleanup any resources like listeners, threads etc.
     }
 
+    /*
+    * Function: onBind
+    * Input: Intent intent - the intent that started the service
+    * Output: IBinder - the communication channel to the service\
+    * Description: This function is called when a client wants to bind to the service. It returns the communication channel to the service.
+    * */
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -89,7 +123,12 @@ public class NotificationService  extends Service
         return null;
     }
 
-
+    /*
+    * Function: listenToChat
+    * Input: String chatName - the name of the chat
+    * Output: void
+    * Description: This function will set up a listener for the messages in the chat
+    * */
     private void listenToChat(String chatName)
     {
         /// this method will set up a listener for the messages in the chat
@@ -109,6 +148,12 @@ public class NotificationService  extends Service
 
     }
 
+    /*
+    * Function: setupChannel
+    * Input: None
+    * Output: void
+    * Description: This function sets up the notification channel for the service
+    * */
     private void setupChannel()
     {
         // Create the NotificationChannel, but only on API 26+ because
@@ -127,6 +172,12 @@ public class NotificationService  extends Service
         }
     }
 
+    /*
+    * Function: sendNotification
+    * Input: Message message - the message to send, String chatName - the name of the chat
+    * Output: void
+    * Description: This function sends a notification to the user
+     */
     private void sendNotification(Message message, String chatName)
     {
         if(!checkConditionsToSendNotification(message, chatName))
@@ -170,6 +221,12 @@ public class NotificationService  extends Service
         notificationManager.notify(NOTIFICATION_ID, builder.build());
     }
 
+    /*
+    * Function: checkConditionsToSendNotification
+    * Input: Message message - the message to check, String chatName - the name of the chat
+    * Output: boolean - true if the conditions are met, false otherwise
+    * Description: This function checks if the conditions are met
+     */
     private boolean checkConditionsToSendNotification(Message message, String chatName)
     {
         // if user is not init yet, dont send any notifications

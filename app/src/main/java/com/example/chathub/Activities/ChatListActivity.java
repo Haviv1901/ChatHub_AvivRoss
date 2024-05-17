@@ -17,6 +17,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Class: ChatListActivity
+ * Extends: MainActivity
+ * Implements: View.OnClickListener
+ * Description: This class handles the chat list activity. It displays a list of chats and provides options to create a new chat, logout, and view profile.
+ */
 public class ChatListActivity extends MainActivity implements View.OnClickListener {
 
     // views
@@ -69,13 +75,23 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
 
     }
 
-
-    /// this method will set up a listener for the messages in the chat
+    /**
+     * Function: getChatsFromFirebase
+     * Input: None
+     * Output: None
+     * Description: This function fetches the chat data from Firebase.
+     */
     private void getChatsFromFirebase()
     {
         chatManager.setupChatsUserParticipateInListener(this::updateMessagesList);
     }
 
+    /**
+     * Function: updateMessagesList
+     * Input: List<Chat> newMessages
+     * Output: None
+     * Description: This function updates the list of chats. It sorts the new messages by chat ID, updates the chats list, and sets the ChatAdapter for the chatsListView.
+     */
     private void updateMessagesList(List<Chat> newMessages)
     {
         Collections.sort(newMessages, new Comparator<Chat>()
@@ -91,7 +107,12 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
         chatsListView.setAdapter(chatAdapter);
     }
 
-    // function to open chat activity
+    /**
+     * Function: openChatActivity
+     * Input: Chat chat
+     * Output: None
+     * Description: This function opens the ChatActivity for a specific chat. It creates an Intent for the ChatActivity, puts the chat name and ID as extras, and starts the activity.
+     */
     public void openChatActivity(Chat chat)
     {
         // open chat activity
@@ -102,12 +123,18 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
         startActivity(intent);
     }
 
-    // function to open add chat activity
+    /**
+     * Function: openAddChatActivity
+     * Input: None
+     * Output: None
+     * Description: This function opens the CreateChat_NameAndProfilePic activity. It creates an Intent for the CreateChat_NameAndProfilePic activity and starts the activity.
+     */
     public void openAddChatActivity()
     {
         Intent intent = new Intent(ChatListActivity.this, CreateChat_NameAndProfilePic.class);
         startActivity(intent);
     }
+
 
     @Override
     public void onClick(View v)
@@ -130,6 +157,12 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
         }
     }
 
+    /**
+     * Function: openProfileActivity
+     * Input: None
+     * Output: None
+     * Description: This function opens the ProfileActivity. It creates an Intent for the ProfileActivity and starts the activity.
+     */
     private void openProfileActivity()
     {
         Intent intent = new Intent(ChatListActivity.this, ProfileActivity.class);
@@ -138,6 +171,12 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
 
     }
 
+    /**
+     * Function: logOut
+     * Input: None
+     * Output: None
+     * Description: This function logs out the user and opens the LoginActivity. It calls the logout method of userManager, creates an Intent for the LoginActivity, starts the activity, and finishes the current activity.
+     */
     private void logOut()
     {
         userManager.logout();

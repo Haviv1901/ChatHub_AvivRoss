@@ -36,6 +36,7 @@ public class MessageAdapter extends ArrayAdapter<Message>
     private List<Message> messageList;
     private Consumer<Button> playButtonListener;
 
+
     public MessageAdapter(@NonNull Context context, int resource, List<Message> messageList, Consumer<Button> playButtonListener)
     {
         super(context, resource, messageList);
@@ -44,6 +45,12 @@ public class MessageAdapter extends ArrayAdapter<Message>
         this.playButtonListener = playButtonListener;
     }
 
+    /**
+     * Function: getView
+     * Inputs: position, convertView, parent
+     * Outputs: View
+     * Description: This function is called when the list view is being created. It sets the message content and image for each message in the list.
+     */
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent)
@@ -63,6 +70,12 @@ public class MessageAdapter extends ArrayAdapter<Message>
 
     }
 
+    /**
+     * Function: getVoiceMessageView
+     * Inputs: inflater, message
+     * Outputs: View
+     * Description: This function creates a view for a voice message.
+     */
     private View getVoiceMessageView(LayoutInflater inflater, VoiceMessage message)
     {
         View view = inflater.inflate(R.layout.voice_message, null);
@@ -89,6 +102,12 @@ public class MessageAdapter extends ArrayAdapter<Message>
 
     }
 
+    /**
+     * Function: getTextMessageView
+     * Inputs: inflater, message
+     * Outputs: View
+     * Description: This function creates a view for a text message.
+     */
     private View getTextMessageView(LayoutInflater inflater, TextMessage message)
     {
         View view = inflater.inflate(R.layout.text_message, null);

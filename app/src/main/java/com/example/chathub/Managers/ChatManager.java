@@ -37,6 +37,12 @@ import java.util.function.Consumer;
 
 public class ChatManager
 {
+
+    /*
+    * this class is one of the two controllers in the project.
+    * ChatManager is responsible for handling all chat related operations.
+    * */
+
     private DatabaseReference chatsHandler;
     private int currentChatId;
     private String currentChatName;
@@ -50,6 +56,12 @@ public class ChatManager
     private static final String TAG = "ChatManager";
 
 
+    /**
+     * Function: ChatManager
+     * Input: Context context
+     * Output: None
+     * Description: This is the constructor for the ChatManager class. It initializes the class with a given context.
+     */
     public ChatManager(Context context)
     {
         initHandlersAndManagers(context);
@@ -57,6 +69,12 @@ public class ChatManager
         currentChatName = "";
     }
 
+    /**
+     * Function: ChatManager
+     * Input: String currentChatName, int currentChatId, Context context
+     * Output: None
+     * Description: This is an overloaded constructor for the ChatManager class. It initializes the class with a given chat name, chat id, and context.
+     */
     public ChatManager(String currentChatName, int currentChatId, Context context)
     {
         initHandlersAndManagers(context);
@@ -65,6 +83,12 @@ public class ChatManager
         setListenerToMessageId();
     }
 
+    /*
+    * Function: initHandlersAndManagers
+    * Inputs: context
+    * Outputs: void
+    * Description: This function initializes the handlers and managers for the ChatManager.
+    * */
     private void initHandlersAndManagers(Context context)
     {
         this.context = context;
@@ -72,27 +96,56 @@ public class ChatManager
         chatsHandler = FirebaseDatabase.getInstance().getReference("Chats");
     }
 
+    /*
+    * Function: getChatsHandler
+    * Inputs: void
+    * Outputs: DatabaseReference
+    * Description: This function returns the chatsHandler.
+    * */
     public DatabaseReference getChatsHandler()
     {
         return chatsHandler;
     }
 
+    /**
+     * Function: getChatName
+     * Input: None
+     * Output: String
+     * Description: This function returns the current chat name.
+     */
     public String getChatName()
     {
         return currentChatName;
     }
 
-
-
-
+    /**
+     * Function: sendTextMessage
+     * Input: String messageText, Bitmap image
+     * Output: None
+     * Description: This function sends a text message with an image.
+     */
     public void sendTextMessage(String messageText, Bitmap image) {
         String imagePath = Utilities.uploadFile(Utilities.CHAT_IMAGE_PATH_STORAGE, image, Utilities.PNG_EXTENSION);
         sendTextMessage(messageText, imagePath);
     }
+
+    /**
+     * Function: sendTextMessage
+     * Input: String messageText
+     * Output: None
+     * Description: This function sends a text message.
+     */
     public void sendTextMessage(String messageText)
     {
         sendTextMessage(messageText, "");
     }
+
+    /**
+     * Function: sendTextMessage
+     * Input: String messageText, String imagePath
+     * Output: None
+     * Description: This function sends a text message with an image from a given path.
+     */
     public void sendTextMessage(String messageText, String imagePath)
     {
         // create a new message object
@@ -104,6 +157,12 @@ public class ChatManager
         addToLastMessageId();
     }
 
+    /**
+     * Function: sendVoiceMessage
+     * Input: String audioPath, String audioLength
+     * Output: None
+     * Description: This function sends a voice message.
+     */
     private void sendVoiceMessage(String audioPath, String audioLength)
     {
         VoiceMessage newMessage = new VoiceMessage(
@@ -111,20 +170,36 @@ public class ChatManager
         sendMessage(newMessage);
     }
 
-    // sends a message object to the db
+    /**
+     * Function: sendMessage
+     * Input: Message message
+     * Output: None
+     * Description: This function sends a message object to the database.
+     */
     public void sendMessage(Message message)
     {
         msgSentLog(message);
         chatsHandler.child(currentChatName).child("Messages").push().setValue(message);
     }
 
+    /**
+     * Function: msgSentLog
+     * Input: Message message
+     * Output: None
+     * Description: This function logs a message that has been sent.
+     */
     private void msgSentLog(Message message)
     {
         Log.e(TAG, "Message sent: " + message.toString());
     }
 
 
-    // sets a given int as the next message id
+    /**
+     * Function: addToLastMessageId
+     * Input: None
+     * Output: None
+     * Description: This function increments the last message id.
+     */
     public void addToLastMessageId()
     {
         DatabaseReference refrenceToLastMessageId = chatsHandler.child(currentChatName).child("nextMessageId");
@@ -132,6 +207,12 @@ public class ChatManager
         lastMessageId++;
     }
 
+    /**
+     * Function: setListenerToMessageId
+     * Input: None
+     * Output: None
+     * Description: This function sets a listener to the message id.
+     */
     public void setListenerToMessageId()
     {
         DatabaseReference refrenceToLastMessageId = chatsHandler.child(currentChatName).child("nextMessageId");
@@ -151,6 +232,12 @@ public class ChatManager
         });
     }
 
+    /**
+     * Function: setupMessagesListener
+     * Input: Consumer<List<Message>> updateMessagesList
+     * Output: None
+     * Description: This function sets up a listener for messages.
+     */
     public void setupMessagesListener(Consumer<List<Message>> updateMessagesList)
     {
         getChatsHandler().child(getChatName()).child("Messages").addValueEventListener(new ValueEventListener()
@@ -169,6 +256,12 @@ public class ChatManager
         });
     }
 
+    /**
+     * Function: retrieveMessagesFromSnapshot
+     * Input: DataSnapshot snapshot
+     * Output: List<Message>
+     * Description: This function retrieves messages from a snapshot.
+     */
     public List<Message> retrieveMessagesFromSnapshot(DataSnapshot snapshot)
     {
         List<Message> messages = new ArrayList<>();
@@ -190,6 +283,12 @@ public class ChatManager
         return messages;
     }
 
+    /**
+     * Function: retrieveLastMessageFromSnapshot
+     * Input: DataSnapshot dataSnapshot
+     * Output: Message
+     * Description: This function retrieves the last message from a snapshot.
+     */
     public Message retrieveLastMessageFromSnapshot(DataSnapshot dataSnapshot)
     {
         List<Message> newMessages = retrieveMessagesFromSnapshot(dataSnapshot);
@@ -201,6 +300,12 @@ public class ChatManager
         return newMessages.get(newMessages.size() - 1);
     }
 
+    /**
+     * Function: setupChatsUserParticipateInListener
+     * Input: Consumer<List<Chat>> callback
+     * Output: None
+     * Description: This function sets up a listener for chats that the user participates in.
+     */
     public void setupChatsUserParticipateInListener(Consumer<List<Chat>> callback)
     {
         getChatsHandler().addValueEventListener(new ValueEventListener()
@@ -219,7 +324,12 @@ public class ChatManager
         });
     }
 
-
+    /**
+     * Function: retrieveChatsLoggedUserParticipateFromSnapshot
+     * Input: DataSnapshot dataSnapshot
+     * Output: List<Chat>
+     * Description: This function retrieves the chats that the logged-in user participates in from a snapshot.
+     */
     public List<Chat> retrieveChatsLoggedUserParticipateFromSnapshot(DataSnapshot dataSnapshot)
     {
         List<Chat> newChats = retrieveChatsFromSnapshot(dataSnapshot);
@@ -242,6 +352,12 @@ public class ChatManager
         return chatsUserParticipateIn;
     }
 
+    /**
+     * Function: retrieveChatsFromSnapshot
+     * Input: DataSnapshot dataSnapshot
+     * Output: List<Chat>
+     * Description: This function retrieves chats from a snapshot.
+     */
     public List<Chat> retrieveChatsFromSnapshot(DataSnapshot dataSnapshot)
     {
         List<Chat> newChats = new ArrayList<>();
@@ -254,6 +370,12 @@ public class ChatManager
         return newChats;
     }
 
+    /**
+     * Function: createChat
+     * Input: String chatName, List<Participant> members, byte[] image
+     * Output: None
+     * Description: This function creates a new chat with the given name, members, and image.
+     */
     public void createChat(String chatName, List<Participant> members, byte[] image)
     {
         String imagePath = Utilities.uploadFile(Utilities.CHAT_ICONS_STORAGE, image, Utilities.PNG_EXTENSION);
@@ -266,7 +388,12 @@ public class ChatManager
         loadNextChatId(newChat);
     }
 
-
+    /**
+     * Function: loadNextChatId
+     * Input: Chat newChat
+     * Output: None
+     * Description: This function loads the next chat ID for the new chat.
+     */
     private void loadNextChatId(Chat newChat)
     {
         DatabaseReference refrenceToNextChatId = FirebaseDatabase.getInstance()
@@ -294,7 +421,12 @@ public class ChatManager
         });
     }
 
-
+    /**
+     * Function: sortMessageListById
+     * Input: List<Message> newMessages
+     * Output: None
+     * Description: This function sorts a list of messages by their ID.
+     */
     public static void sortMessageListById(List<Message> newMessages) {
         Collections.sort(newMessages, new Comparator<Message>() {
             @Override
@@ -304,10 +436,12 @@ public class ChatManager
         });
     }
 
-
-    /*
-    * function will extract the file from the path and upload it to the storage
-    * */
+    /**
+     * Function: uploadAudio
+     * Input: byte[] audioByteArr, String audioLength
+     * Output: None
+     * Description: This function uploads an audio file to the storage.
+     */
     public void uploadAudio(byte[] audioByteArr, String audioLength)
     {
 
@@ -316,7 +450,12 @@ public class ChatManager
         sendVoiceMessage(audioPath, audioLength);
     }
 
-
+    /**
+     * Function: downloadAudioFromStorage
+     * Input: String audioPath, Consumer<File> playAudio, ProgressBar pbLoading
+     * Output: None
+     * Description: This function downloads an audio file from the storage.
+     */
     public void downloadAudioFromStorage(String audioPath, Consumer<File> playAudio, ProgressBar pbLoading)
     {
         // Create a reference to the file to download

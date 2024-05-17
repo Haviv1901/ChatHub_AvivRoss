@@ -4,6 +4,10 @@ import java.util.List;
 
 public class Participant
 {
+    /*
+    * this class is a data container for chat particiapatns. used in activity
+    * for selecting participants for chat creation
+     */
     private String username;
     private String uid;
     private boolean selected;

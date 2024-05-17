@@ -55,6 +55,12 @@ public class SignUpActivity extends MainActivity implements View.OnClickListener
 
     }
 
+    /**
+     * Function: onClick
+     * Input: View v - the view that was clicked
+     * Output: void
+     * Description: This function is called when a view is clicked. It checks which view was clicked and calls the appropriate function.
+     */
     @Override
     public void onClick(View v)
     {
@@ -66,6 +72,13 @@ public class SignUpActivity extends MainActivity implements View.OnClickListener
 
     }
 
+    /**
+     * Function: signUpOnClick
+     * Input: void
+     * Output: void
+     * Description: This function is called when the sign up button is clicked. It retrieves the text entered by the user and checks if the username is valid.
+     *              If the username is valid, it sends the user to the OTPVerification activity.
+     */
     private void signUpOnClick()
     {
         // Retrieve the text entered by the user
@@ -85,6 +98,14 @@ public class SignUpActivity extends MainActivity implements View.OnClickListener
 
     }
 
+    /**
+     * Function: onActivityResult
+     * Input: int requestCode - the request code
+     *        int resultCode - the result code
+     *        Intent data - the intent data
+     * Output: void
+     * Description: This function is called when an activity returns a result. It checks if the result is OK and registers the user.
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
@@ -110,10 +131,12 @@ public class SignUpActivity extends MainActivity implements View.OnClickListener
     }
 
 
-    /*
-    * check validation of all fields.
-    * return true if all fields valid, false otherwise.
-    */
+    /**
+     * Function: checkUsernameValidation
+     * Input: String username - the username
+     * Output: boolean - true if the username is valid, false otherwise
+     * Description: This function checks if the username is valid. It checks if the username is at least 2 characters long and if the username exists.
+     */
     private boolean checkUsernameValidation(String username)
     {
         // Perform validation
@@ -135,6 +158,12 @@ public class SignUpActivity extends MainActivity implements View.OnClickListener
         return true;
     }
 
+    /**
+     * Function: changeUIOnUsernameExists
+     * Input: Boolean isExists - whether the username exists
+     * Output: void
+     * Description: This function changes the UI based on whether the username exists or not.
+     */
     private void changeUIOnUsernameExists(Boolean isExists)
     {
         pbUsernameSignUp.setVisibility(View.GONE);
@@ -154,8 +183,13 @@ public class SignUpActivity extends MainActivity implements View.OnClickListener
 
     }
 
-
-
+    /**
+     * Function: onFocusChange
+     * Input: View v - the view that was focused
+     *        boolean hasFocus - whether the view has focus or not
+     * Output: void
+     * Description: This function is called when a view gains or loses focus. It checks if the username is valid when the username edit text loses focus.
+     */
     @Override
     public void onFocusChange(View v, boolean hasFocus)
     {

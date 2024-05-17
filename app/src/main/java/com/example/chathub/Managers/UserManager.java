@@ -44,9 +44,16 @@ public class UserManager {
 
 
     /*
+
+     * Function: initUserData
+     * Inputs: None
+     * Outputs: Boolean
+     * Description: This function initializes the username and uid of the user. It gets the current user from the Firebase authentication and gets the username from the Firebase database. It returns true if the username is saved and false otherwise.
+     *
      * this function will init username and uid static fields of the class.
      * it is thread-safe and will not stop the thread.
      * if u want to ensure getting the username and uid, use initUsernameAndUidAndWait()
+     *
      * */
     private Boolean initUserData()
     {
@@ -93,6 +100,12 @@ public class UserManager {
      * this function call initUsernameAndUid and wait until it finishes.
      * this function promises that at the end, the username and uid will be initialized.
      *  ** WARNING ** this function WILL stop the thread it is called on.
+     *
+     * Function: initUserDataAndWait
+     * Inputs: None
+     * Outputs: void
+     * Description: This function initializes the username and uid of the user and waits until the username is saved.
+     *
      * */
     private void initUserDataAndWait()
     {
@@ -114,7 +127,14 @@ public class UserManager {
         }
     }
 
-
+    /*
+     * Function: registerUser
+     * Inputs: String username - the username of the user
+     *         String userUid - the uid of the user
+     * Outputs: void
+     * Description: This function registers the user in the Firebase database.
+     *
+     * */
     public void registerUser(String username, String userUid) {
         // Create a User object
         User user = new User(username);
@@ -129,6 +149,13 @@ public class UserManager {
         this.username = username;
     }
 
+    /*
+     * Function: md5
+     * Inputs: String s - the string to hash
+     * Outputs: String - the hashed string
+     * Description: This function hashes the input string using the MD5 algorithm and returns the hashed string.
+     *
+     * */
     public static String md5(final String s) {
         final String MD5 = "MD5";
         try {
@@ -154,7 +181,14 @@ public class UserManager {
         return "";
     }
 
-
+    /*
+     * Function: login
+     * Inputs: String username - the username of the user
+     *         String password - the password of the user
+     * Outputs: void
+     * Description: This function logs in the user with the given username and password.
+     *
+     * */
     public void logout() {
         username = "";
         this.uid = "";
@@ -163,17 +197,38 @@ public class UserManager {
         Log.e(TAG, "User logged out");
     }
 
+    /*
+     * Function: getCurrentUsername
+     * Inputs: None
+     * Outputs: String - the username of the current user
+     * Description: This function returns the username of the current user.
+     *
+     * */
     public String getCurrentUsername()
     {
         initUserData();
         return username;
     }
 
+    /*
+     * Function: getCurrentUid
+     * Inputs: None
+     * Outputs: String - the uid of the current user
+     * Description: This function returns the uid of the current user.
+     *
+     * */
     public String getCurrentUid() {
         initUserData();
         return uid;
     }
 
+    /*
+     * Function: isUserLoggedIn
+     * Inputs: None
+     * Outputs: Boolean - true if the user is logged in, false otherwise
+     * Description: This function returns true if the user is logged in and false otherwise.
+     *
+     * */
     public Boolean isUserLoggedIn()
     {
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -184,6 +239,14 @@ public class UserManager {
         return false;
     }
 
+    /*
+     * Function: isUsernameExists
+     * Inputs: String username - the username to check
+     *         Consumer<Boolean> callback - the callback function
+     * Outputs: void
+     * Description: This function checks if the given username exists in the database and calls the callback function with the result.
+     *
+     * */
     public void isUsernameExists(String username, Consumer<Boolean> callback)
     {
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
@@ -214,6 +277,13 @@ public class UserManager {
         });
     }
 
+    /*
+     * Function: changeUsername
+     * Inputs: String newUsername - the new username
+     * Outputs: void
+     * Description: This function changes the username of the current user to the given username.
+     *
+     * */
     public void changeUsername(String newUsername)
     {
 
