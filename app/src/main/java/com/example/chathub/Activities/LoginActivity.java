@@ -51,7 +51,7 @@ public class LoginActivity extends MainActivity implements View.OnClickListener
         ActivityCompat.requestPermissions(this, Utilities.PERMISSIONS, REQUEST_PERMISSIONS);
 
         // init manager
-        userManager = new UserManager(this);
+        userManager = new UserManager();
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(userManager.isUserLoggedIn())

@@ -107,12 +107,6 @@ public class CreateChat_NameAndProfilePic extends MainActivity implements View.O
             return false;
         }
 
-        if (!chatName.matches("[a-zA-Z0-9]+"))
-        {
-            etChatName.setError("Chat name must contain only english letters and numbers");
-            return false;
-        }
-
         // and bitmap is not null
         if (chatImage == null) {
             // no image chosen

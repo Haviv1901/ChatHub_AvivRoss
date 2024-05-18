@@ -51,7 +51,7 @@ public class ChatListActivity extends MainActivity implements View.OnClickListen
 
         // managers
         chatManager = new ChatManager(this);
-        userManager = new UserManager(this);
+        userManager = new UserManager();
 
         // views
         chatsListView = findViewById(R.id.chatList);

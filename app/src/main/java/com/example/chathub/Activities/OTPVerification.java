@@ -57,7 +57,7 @@ public class OTPVerification extends AppCompatActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up_otpactivity);
 
-         userManager = new UserManager(this);
+         userManager = new UserManager();
 
         // views
         etOTPConfirm = findViewById(R.id.etOTPConfirm);

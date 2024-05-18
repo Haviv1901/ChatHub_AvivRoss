@@ -49,7 +49,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        userManager = new UserManager(this);
+        userManager = new UserManager();
 
         // views
         tvUsernameProfile = findViewById(R.id.tvUsernameProfile);
