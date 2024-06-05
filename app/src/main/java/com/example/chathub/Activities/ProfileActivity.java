@@ -156,6 +156,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             turnOffEditMode();
             tvUsernameProfile.setText(etNewUsername.getText().toString());
             userManager.changeUsername(etNewUsername.getText().toString());
+            username = etNewUsername.getText().toString();
         }
 
     }
