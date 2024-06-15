@@ -43,13 +43,19 @@ public class ChatManager
     * ChatManager is responsible for handling all chat related operations.
     * */
 
+    // handler for chats
     private DatabaseReference chatsHandler;
+    // current chat id
     private int currentChatId;
+    // currnet chat name
     private String currentChatName;
+    // last message id
     private int lastMessageId;
+    // context of activity
     private Context context;
 
     // managers
+    // user manager
     private UserManager userManager;
 
     // consts
@@ -92,7 +98,7 @@ public class ChatManager
     private void initHandlersAndManagers(Context context)
     {
         this.context = context;
-        userManager = new UserManager(context);
+        userManager = new UserManager();
         chatsHandler = FirebaseDatabase.getInstance().getReference("Chats");
     }
 

@@ -49,7 +49,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        userManager = new UserManager(this);
+        userManager = new UserManager();
 
         // views
         tvUsernameProfile = findViewById(R.id.tvUsernameProfile);
@@ -156,6 +156,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             turnOffEditMode();
             tvUsernameProfile.setText(etNewUsername.getText().toString());
             userManager.changeUsername(etNewUsername.getText().toString());
+            username = etNewUsername.getText().toString();
         }
 
     }

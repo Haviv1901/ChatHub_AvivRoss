@@ -35,7 +35,7 @@ public class SignUpActivity extends MainActivity implements View.OnClickListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
-        userManager = new UserManager(this);
+        userManager = new UserManager();
 
         // views
 
