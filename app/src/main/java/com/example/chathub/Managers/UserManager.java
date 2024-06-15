@@ -23,7 +23,6 @@ import java.util.function.Consumer;
 
 public class UserManager {
 
-    private Context context;
     private FirebaseAuth mAuth;
 
     // static fields
@@ -34,10 +33,9 @@ public class UserManager {
     // consts
     private final String TAG = "UserManager";
 
-    public UserManager(Context context)
+    public UserManager()
     {
         mAuth = FirebaseAuth.getInstance();
-        this.context = context;
 
         initUserDataAndWait();
     }
@@ -147,6 +145,7 @@ public class UserManager {
 
         isUsernameSaved = true;
         this.username = username;
+        this.uid = userUid;
     }
 
     /*
@@ -182,11 +181,10 @@ public class UserManager {
     }
 
     /*
-     * Function: login
-     * Inputs: String username - the username of the user
-     *         String password - the password of the user
+     * Function: logout
+     * Inputs: None
      * Outputs: void
-     * Description: This function logs in the user with the given username and password.
+     * Description: This function logs םוא in the user with the given username and password.
      *
      * */
     public void logout() {

@@ -70,7 +70,7 @@ public class CreateChat_ChooseParticipants extends AppCompatActivity implements 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_chat_choose_participants);
 
-        userManager = new UserManager(this);
+        userManager = new UserManager();
         participants = new ArrayList<Participant>();
         selectedParticipants = new ArrayList<Participant>();
         selectedParticipants.add(new Participant(userManager.getCurrentUsername(), userManager.getCurrentUid()));

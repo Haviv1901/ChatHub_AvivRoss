@@ -36,7 +36,9 @@ public class NotificationService  extends Service
     * */
 
     // managers
+    // this class will handle all the chats
     private ChatManager chatManager;
+    // this class will handle the user
     private UserManager userManager;
 
     // consts
@@ -49,7 +51,7 @@ public class NotificationService  extends Service
         super.onCreate();
         // This is the place where you can setup listeners for your chats
         chatManager = new ChatManager(this);
-        userManager = new UserManager(this);
+        userManager = new UserManager();
         setupChannel();
         getChatsFromFirebase();
         Log.e(TAG, "Notification listener started.");
