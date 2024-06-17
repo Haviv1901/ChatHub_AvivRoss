@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "868265103263",
+    "firebase_url": "https://chathub-ace8d-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "chathub-ace8d",
+    "storage_bucket": "chathub-ace8d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:868265103263:android:bf70069bb3b2be738fb7aa",
+        "android_client_info": {
+          "package_name": "com.example.chathub"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "868265103263-j89jrgl5lnh8jad051udpm5oc303a6em.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.chathub",
+            "certificate_hash": "08a9d9a0d20cd2571e80ae6cbea8a184cbe67be4"
+          }
+        },
+        {
+          "client_id": "868265103263-g506bslca4tpi197l2l57sro3761q7tj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOpLEv4JJnGKkh4DW8fbYs8v6Mlb9dAAQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "868265103263-g506bslca4tpi197l2l57sro3761q7tj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

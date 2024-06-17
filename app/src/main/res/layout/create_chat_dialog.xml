@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <!-- Title: Create Group -->
+    <TextView
+        android:id="@+id/textViewTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create Group"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center"/>
+
+    <!-- Text input: Group Name -->
+    <EditText
+        android:id="@+id/editTextGroupName"
+        android:layout_below="@id/textViewTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="Group Name"
+        android:inputType="text"/>
+
+    <!-- Add Friends Icon -->
+    <ImageView
+        android:id="@+id/imageViewAddFriends"
+        android:layout_below="@id/editTextGroupName"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+
+        android:src="@drawable/add_user"/>
+
+    <!-- Set Group Icon -->
+    <ImageView
+        android:id="@+id/imageViewSetGroupIcon"
+        android:layout_below="@id/editTextGroupName"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="200dp"
+        android:layout_toRightOf="@id/imageViewAddFriends"
+        android:src="@drawable/cameraicon"/>
+
+    <!-- Cancel Button -->
+    <Button
+        android:id="@+id/buttonCancel"
+        android:layout_below="@id/imageViewAddFriends"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Cancel"/>
+
+    <!-- Save Button -->
+    <Button
+        android:id="@+id/buttonSave"
+        android:layout_below="@id/imageViewAddFriends"
+        android:layout_toRightOf="@id/buttonCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="150dp"
+        android:text="Save"/>
+
+</RelativeLayout>
