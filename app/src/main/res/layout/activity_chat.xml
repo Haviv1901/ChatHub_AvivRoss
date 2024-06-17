@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activities.ChatActivity"
+    android:orientation="vertical"
+    >
+
+<LinearLayout
+    android:id="@+id/topBar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background ="@color/green"
+    >
+
+    <ImageButton
+        android:id="@+id/ibBack"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@null"
+        android:scaleType="fitXY"
+        android:src="@drawable/chaticon"
+        android:layout_marginLeft="10dp"
+        />
+
+    <TextView
+        android:id="@+id/tvGroupName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Group"
+        android:textSize="30sp"
+        android:textColor="@color/white"
+        android:layout_marginLeft="20dp"
+        android:textStyle="bold"
+        />
+
+</LinearLayout>
+
+<ListView
+    android:id="@+id/messegesListView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:layout_below="@id/topBar"
+    android:layout_above="@id/imageBar"
+    />
+
+<LinearLayout
+    android:id="@+id/imageBar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    >
+
+    <ImageView
+        android:id="@+id/ivImage"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@null"
+        android:scaleType="fitXY"
+        android:src="@drawable/cameraicon"
+        android:layout_marginRight="10dp"
+        />
+    <TextView
+        android:id="@+id/tvImageName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Image"
+        android:textSize="20sp"
+        android:textColor="@color/black"
+        android:layout_marginRight="10dp"
+        />
+    <ImageView
+        android:id="@+id/ivXIcon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:background="@null"
+        android:scaleType="fitXY"
+        android:src="@drawable/xicon"
+        android:layout_marginRight="10dp"
+        android:layout_gravity="right"
+    />
+
+</LinearLayout>
+
+<LinearLayout
+    android:id="@+id/bottomBar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_alignParentBottom="true"
+    >
+
+    <EditText
+        android:id="@+id/etMessage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:hint="Type a message"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        />
+
+    <ImageButton
+        android:id="@+id/ibCameraButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@null"
+        android:scaleType="fitXY"
+        android:src="@drawable/cameraicon"
+        android:layout_marginRight="10dp"
+        />
+
+    <ImageButton
+        android:id="@+id/ibMicrophoneButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@null"
+        android:scaleType="fitXY"
+        android:src="@drawable/microphone"
+        android:layout_marginRight="10dp"
+        />
+
+
+    <ImageButton
+        android:id="@+id/ibSendButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@null"
+        android:scaleType="fitXY"
+        android:src="@drawable/sendicon"
+        android:layout_marginRight="10dp"
+        />
+</LinearLayout>
+
+</LinearLayout>
